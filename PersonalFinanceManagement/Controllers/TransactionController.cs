@@ -36,18 +36,11 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetTransactions([FromQuery] string transactionKind, [FromQuery] string startDate, [FromQuery] string endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
+        public async Task<IActionResult> GetTransactions([FromQuery] string transactionKind, [FromQuery] string startDate, [FromQuery] string endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
         {
-            var transactions = _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
+            var transactions = await _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve,
-            };
-
-            var serializedTransactions = JsonSerializer.Serialize(transactions, jsonOptions);
-
-            return Ok(serializedTransactions);
+            return Ok(transactions);
         }
 
         [HttpPost("import")]

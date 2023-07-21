@@ -44,6 +44,10 @@ namespace PersonalFinanceManagement
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
 
+            //Added TransactionService and TransactionRepository
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+
             services.AddScoped<ICsvParserService, CsvParserService>();
 
             //AutoMapper

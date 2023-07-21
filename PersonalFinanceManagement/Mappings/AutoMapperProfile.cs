@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.Category;
 using System;
 
 namespace PersonalFinanceManagement.Mappings
@@ -33,6 +34,16 @@ namespace PersonalFinanceManagement.Mappings
                 .ForMember(t => t.mcc, e => e.MapFrom(x => x.MccCode))
                 .ForMember(t => t.catCode, e => e.MapFrom(x => x.CatCode));
             CreateMap<PagedSortedList<TransactionEntity>, PagedSortedList<Transaction>>();
+
+            CreateMap<CategoryEntity, Category>()
+                .ForMember(t => t.Code, e => e.MapFrom(x => x.code))
+                .ForMember(t => t.Name, e => e.MapFrom(x => x.name))
+                .ForMember(t => t.ParentCode, e => e.MapFrom(x => x.parentCode));
+
+            CreateMap<Category, CategoryEntity>()
+                .ForMember(t => t.code, e => e.MapFrom(x => x.Code))
+                .ForMember(t => t.name, e => e.MapFrom(x => x.Name))
+                .ForMember(t => t.parentCode, e => e.MapFrom(x => x.ParentCode));
         }
 
         protected internal AutoMapperProfile(string profileName, Action<IProfileExpression> configurationAction) : base(profileName, configurationAction)

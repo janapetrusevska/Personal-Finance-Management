@@ -13,6 +13,8 @@ namespace PersonalFinanceManagement.Database
     {
         public DbSet<TransactionEntity> Transactions { get; set; }
 
+        public DbSet<CategoryEntity> Categories { get; set; }
+
         public PfmDbContext(DbContextOptions options) : base(options)
         {
         }
@@ -26,6 +28,9 @@ namespace PersonalFinanceManagement.Database
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             modelBuilder.ApplyConfiguration(
                 new TransactionEntityTypeConfiguration()
+                );
+            modelBuilder.ApplyConfiguration(
+                new CategoryEntityTypeConfiguration()
                 );
             base.OnModelCreating(modelBuilder);
         }

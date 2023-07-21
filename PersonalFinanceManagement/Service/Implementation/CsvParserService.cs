@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.Category;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -44,6 +45,31 @@ namespace PersonalFinanceManagement.Service.Implementation
                 //    }
                 //}
                 return transactions;
+            }
+
+        }
+
+        public List<Category> ReadingCategoriesFromFile(IFormFile csvFile)
+        {
+            List<Category> categories = new List<Category>();
+
+            using (var stream = csvFile.OpenReadStream())
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        HasHeaderRecord = true,
+                        MissingFieldFound = null,
+                        TrimOptions = TrimOptions.Trim,
+                    };
+                    CsvReader csv = new CsvReader(reader, csvConfig);
+                    csv.Context.RegisterClassMap<CategoryMap>();
+
+                    categories = csv.GetRecords<Category>().ToList();
+                }
+
+                return categories;
             }
 
         }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.Models;
 using PersonalFinanceManagement.Models.Category;
 using System;
@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace PersonalFinanceManagement.Service
 {
-    public interface ICsvParserService
+    public interface ICategoryService
     {
-        List<Transaction> ReadingTransactionsFromFile(IFormFile csvFile);
+        Task<PagedSortedList<Category>> GetCategories(string parentId);
 
-        List<Category> ReadingCategoriesFromFile(IFormFile csvFile);
+        Task<List<Category>> ImportCategories(List<Category> categories);
     }
 }
