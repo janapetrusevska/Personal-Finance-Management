@@ -10,7 +10,7 @@ namespace PersonalFinanceManagement.Service
 {
     public interface ICategoryService
     {
-        Task<PagedSortedList<Category>> GetCategories(string parentId);
+        Task<List<Category>> GetCategories(string parentId);
 
         Task<List<Category>> ImportCategories(List<Category> categories);
     }

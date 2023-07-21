@@ -28,9 +28,11 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCategories([FromQuery] string parentId)
+        public async Task<IActionResult> GetCategories([FromQuery] string parentId)
         {
-            return Ok();
+            var categories = await _categoryService.GetCategories(parentId);
+
+            return Ok(categories);
         }
 
         [HttpPost("import")]

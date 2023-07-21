@@ -21,9 +21,10 @@ namespace PersonalFinanceManagement.Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task<PagedSortedList<Category>> GetCategories(string parentId)
+        public async Task<List<Category>> GetCategories(string parentId)
         {
-            throw new NotImplementedException();
+            var categoryList = await _repository.GetCategories(parentId);
+            return _mapper.Map<List<Category>>(categoryList);
         }
 
         public async Task<List<Category>> ImportCategories(List<Category> categories)

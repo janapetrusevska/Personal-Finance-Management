@@ -1,4 +1,5 @@
-﻿using PersonalFinanceManagement.Database.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,21 @@ namespace PersonalFinanceManagement.Database.Repository
             _dbContext = dbContext;
         }
 
-        public Task<PagedSortedList<CategoryEntity>> GetCategories(string parentCode = null)
+        public async Task<List<CategoryEntity>> GetCategories(string parentCode = null)
         {
-            throw new NotImplementedException();
+            var query = _dbContext.Categories.AsQueryable();
+
+            if (!String.IsNullOrEmpty(parentCode))
+            {
+                query = query.Where(c => c.parentCode == parentCode);
+            }
+            else
+            {
+                query = query.Where(c => c.parentCode == "");
+            }
+            var categories = await query.ToListAsync();
+
+            return categories;
         }
 
         public async Task ImportCategories(List<CategoryEntity> categories)
