@@ -24,8 +24,8 @@ namespace PersonalFinanceManagement.Service.Implementation
 
         public async Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, string startDate, string endDate, int page, int pageSize, SortOrder sortOrder, string sortBy)
         {
-            var transactions = await _repository.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
-            return _mapper.Map<PagedSortedList<Transaction>>(transactions);
+            var pagedSortedList = await _repository.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
+            return _mapper.Map<PagedSortedList<Transaction>>(pagedSortedList);
         }
 
         public async Task<PagedSortedList<Transaction>> ImportTransactions(List<Transaction> transactions)
@@ -37,10 +37,10 @@ namespace PersonalFinanceManagement.Service.Implementation
             var pagedSortedList = new PagedSortedList<Transaction>();
 
             pagedSortedList.TotalCount = transactions.Count;
-            pagedSortedList.PageSize = transactions.Count; 
-            pagedSortedList.Page = 1; 
-            pagedSortedList.TotalPages = 1; 
-            pagedSortedList.SortOrder = SortOrder.asc; 
+            pagedSortedList.PageSize = transactions.Count;
+            pagedSortedList.Page = 1;
+            pagedSortedList.TotalPages = 1;
+            pagedSortedList.SortOrder = SortOrder.asc;
             pagedSortedList.SortBy = null;
 
             pagedSortedList.Items = transactions;

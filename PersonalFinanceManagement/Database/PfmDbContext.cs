@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace PersonalFinanceManagement.Database
 {
-    public class TransactionDbContext : DbContext
+    public class PfmDbContext : DbContext
     {
         public DbSet<TransactionEntity> Transactions { get; set; }
 
-        public TransactionDbContext(DbContextOptions options) : base(options)
+        public PfmDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        public TransactionDbContext()
+        public PfmDbContext()
         {
         }
 

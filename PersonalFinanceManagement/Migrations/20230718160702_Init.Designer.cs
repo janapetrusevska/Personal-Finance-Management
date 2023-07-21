@@ -7,7 +7,7 @@ using PersonalFinanceManagement.Database;
 
 namespace PersonalFinanceManagement.Migrations
 {
-    [DbContext(typeof(TransactionDbContext))]
+    [DbContext(typeof(PfmDbContext))]
     [Migration("20230718160702_Init")]
     partial class Init
     {

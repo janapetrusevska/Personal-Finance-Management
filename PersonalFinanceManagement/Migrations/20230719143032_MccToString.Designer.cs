@@ -8,7 +8,7 @@ using PersonalFinanceManagement.Database;
 
 namespace PersonalFinanceManagement.Migrations
 {
-    [DbContext(typeof(TransactionDbContext))]
+    [DbContext(typeof(PfmDbContext))]
     [Migration("20230719143032_MccToString")]
     partial class MccToString
     {

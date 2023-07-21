@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace PersonalFinanceManagement.Database.Repository
 {
     public class TransactionRepository : ITransactionRepository
     {
-        private readonly TransactionDbContext _dbContext;
+        private readonly PfmDbContext _dbContext;
 
-        public TransactionRepository(TransactionDbContext dbContext)
+        public TransactionRepository(PfmDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -28,11 +29,14 @@ namespace PersonalFinanceManagement.Database.Repository
             {
                 switch (sortBy)
                 {
-                    case "code":
+                    case "id":
                         query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.id) : query.OrderByDescending(x => x.id);
                         break;
                     case "cat":
                         query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.catCode) : query.OrderByDescending(x => x.catCode);
+                        break;
+                    case "kind":
+                        query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.kind) : query.OrderByDescending(x => x.kind);
                         break;
                 }
             }
@@ -40,6 +44,24 @@ namespace PersonalFinanceManagement.Database.Repository
             {
                 query = query.OrderBy(x => x.id);
             }
+
+            if (!String.IsNullOrEmpty(transactionKind))
+            {
+                if (Enum.TryParse<TransactionKind>(transactionKind, true, out var parsedKind))
+                {
+                    query = query.Where(x => x.kind == parsedKind);
+                }
+            }
+
+            //if (startDate.HasValue)
+            //{
+            //    query = query.Where(x => x.date >= startDate.Value);
+            //}
+
+            //if (endDate.HasValue)
+            //{
+            //    query = query.Where(x => x.date <= endDate.Value);
+            //}
 
             query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
@@ -60,7 +82,11 @@ namespace PersonalFinanceManagement.Database.Repository
         public async Task ImportTransactions(List<TransactionEntity> transactions)
         {
             await _dbContext.Transactions.AddRangeAsync(transactions);
-            await _dbContext.SaveChangesAsync();
+            if (transactions.Count == 0)
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            
         }
     }
 }

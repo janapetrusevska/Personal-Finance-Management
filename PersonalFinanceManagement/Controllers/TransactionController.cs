@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PersonalFinanceManagement.Controllers
@@ -22,20 +24,30 @@ namespace PersonalFinanceManagement.Controllers
     {
         ITransactionService _transactionService;
         private readonly ILogger<TransactionController> _logger;
-        private readonly TransactionDbContext _transactionContext;
+        private readonly PfmDbContext _transactionContext;
+        private readonly ICsvParserService _csvParserService;
 
-        public TransactionController(ILogger<TransactionController> logger, ITransactionService transactionService, TransactionDbContext transactionContext)
+        public TransactionController(ILogger<TransactionController> logger, ITransactionService transactionService, PfmDbContext transactionContext, ICsvParserService csvParserService)
         {
             _logger = logger;
             _transactionService = transactionService;
             _transactionContext = transactionContext;
+            _csvParserService = csvParserService;
         }
 
         [HttpGet]
         public IActionResult GetTransactions([FromQuery] string transactionKind, [FromQuery] string startDate, [FromQuery] string endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
         {
             var transactions = _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
-            return Ok(transactions);
+
+            var jsonOptions = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+            };
+
+            var serializedTransactions = JsonSerializer.Serialize(transactions, jsonOptions);
+
+            return Ok(serializedTransactions);
         }
 
         [HttpPost("import")]
@@ -44,36 +56,15 @@ namespace PersonalFinanceManagement.Controllers
             if (csvFile == null || csvFile.Length == 0)
             {
                 return BadRequest("No file uploaded");
-            } 
-
-            List<Transaction> transactions = new List<Transaction>();
-
-            using (var stream = csvFile.OpenReadStream())
-            {
-                using(var reader = new StreamReader(stream))
-                {
-                    CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
-                    {
-                        HasHeaderRecord = true,
-                        MissingFieldFound = null,
-                        TrimOptions = TrimOptions.Trim,
-                    };
-                    CsvReader csv = new CsvReader(reader, csvConfig);
-                    csv.Context.RegisterClassMap<TransactionMap>();
-
-                    List<Transaction> csvTransactions = csv.GetRecords<Transaction>().ToList();
-                }
-
-                foreach (Transaction t in transactions)
-                {
-                    if (t.Id != null)
-                    {
-                        //error handling
-                        continue;
-                    }
-                }
-                var result = await _transactionService.ImportTransactions(transactions);
             }
+            if (_transactionContext.Transactions.Any())
+            {
+                return Ok("The database is already filled");
+            }
+
+            var transactions = _csvParserService.ReadingTransactionsFromFile(csvFile);
+
+            var result = await _transactionService.ImportTransactions(transactions);
 
             return Ok("CSV file imported successfully");
         }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Database.Repository;
@@ -14,6 +15,8 @@ using PersonalFinanceManagement.Service;
 using PersonalFinanceManagement.Service.Implementation;
 using System;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PersonalFinanceManagement
 {
@@ -30,10 +33,9 @@ namespace PersonalFinanceManagement
         public void ConfigureServices(IServiceCollection services)
         {
             //Added TransactionDbContext
-            services.AddDbContext<TransactionDbContext>(options =>
+            services.AddDbContext<PfmDbContext>(options =>
             {
                 options.UseNpgsql(CreateConnectionString(Configuration));
-                //options.UseSqlServer(CreateConnectionString(Configuration));
             });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -42,10 +44,19 @@ namespace PersonalFinanceManagement
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
 
+            services.AddScoped<ICsvParserService, CsvParserService>();
+
             //AutoMapper
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.JsonSerializerOptions.WriteIndented = true;
+                });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PersonalFinanceManagement", Version = "v1" });
@@ -54,7 +65,7 @@ namespace PersonalFinanceManagement
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, PfmDbContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -62,6 +73,7 @@ namespace PersonalFinanceManagement
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PersonalFinanceManagement v1"));
             }
+            dbContext.Database.Migrate();
 
             app.UseRouting();
 
@@ -77,7 +89,7 @@ namespace PersonalFinanceManagement
         {
             var username = Environment.GetEnvironmentVariable("DATABASE_USERNAME") ?? "postgres";
             var password = Environment.GetEnvironmentVariable("DATABASE_PASSWORD") ?? "JanaPetrovec54";
-            var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME") ?? "PFM";
+            var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME") ?? "pfm";
             var host = Environment.GetEnvironmentVariable("DATABASE_HOST") ?? "localhost";
             var port = Environment.GetEnvironmentVariable("DATABASE_PORT") ?? "5432";
 

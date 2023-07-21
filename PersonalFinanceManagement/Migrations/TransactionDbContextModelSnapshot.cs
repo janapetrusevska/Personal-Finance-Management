@@ -7,7 +7,7 @@ using PersonalFinanceManagement.Database;
 
 namespace PersonalFinanceManagement.Migrations
 {
-    [DbContext(typeof(TransactionDbContext))]
+    [DbContext(typeof(PfmDbContext))]
     partial class TransactionDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
