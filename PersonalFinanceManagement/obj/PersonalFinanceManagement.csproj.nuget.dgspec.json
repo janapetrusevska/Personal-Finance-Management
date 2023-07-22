@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Desktop\\Personal-Finance-Management-main\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj": {}
+    "C:\\Users\\User\\Desktop\\AssecoPraksa\\Personal-Finance-Management\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Desktop\\Personal-Finance-Management-main\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj": {
+    "C:\\Users\\User\\Desktop\\AssecoPraksa\\Personal-Finance-Management\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Desktop\\Personal-Finance-Management-main\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Desktop\\AssecoPraksa\\Personal-Finance-Management\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj",
         "projectName": "PersonalFinanceManagement",
-        "projectPath": "C:\\Users\\User\\Desktop\\Personal-Finance-Management-main\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj",
+        "projectPath": "C:\\Users\\User\\Desktop\\AssecoPraksa\\Personal-Finance-Management\\PersonalFinanceManagement\\PersonalFinanceManagement.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Desktop\\Personal-Finance-Management-main\\PersonalFinanceManagement\\obj\\",
+        "outputPath": "C:\\Users\\User\\Desktop\\AssecoPraksa\\Personal-Finance-Management\\PersonalFinanceManagement\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",

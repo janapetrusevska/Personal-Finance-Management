@@ -9,7 +9,7 @@ namespace PersonalFinanceManagement.Service
 {
     public interface ITransactionService
     {
-        Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, string startDate, string endDate, int page, int pageSize, SortOrder sortOrder, string? sortBy);
+        Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, DateTime startDate, DateTime endDate, int page, int pageSize, SortOrder sortOrder, string? sortBy);
 
         Task<PagedSortedList<Transaction>> ImportTransactions(List<Transaction> transactions);
     }

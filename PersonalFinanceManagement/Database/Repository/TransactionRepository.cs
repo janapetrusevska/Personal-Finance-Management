@@ -19,7 +19,7 @@ namespace PersonalFinanceManagement.Database.Repository
             _dbContext = dbContext;
         }
 
-        public async Task<PagedSortedList<TransactionEntity>> GetTransactions(string transactionKind = null, string startDate = "1/1/2021", string endDate = "1/1/2021", int page = 1, int pageSize = 10, SortOrder sortOrder = SortOrder.asc, string sortBy = null)
+        public async Task<PagedSortedList<TransactionEntity>> GetTransactions(string transactionKind = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 10, SortOrder sortOrder = SortOrder.asc, string sortBy = null)
         {
             var query = _dbContext.Transactions.AsQueryable();
             var totalCount = query.Count();
@@ -53,15 +53,15 @@ namespace PersonalFinanceManagement.Database.Repository
                 }
             }
 
-            //if (startDate.HasValue)
-            //{
-            //    query = query.Where(x => x.date >= startDate.Value);
-            //}
+            if (startDate!=DateTime.MinValue)
+            {
+                query = query.Where(x => x.date >= startDate.Value);
+            }
 
-            //if (endDate.HasValue)
-            //{
-            //    query = query.Where(x => x.date <= endDate.Value);
-            //}
+            if (endDate != DateTime.MinValue)
+            {
+                query = query.Where(x => x.date <= endDate.Value);
+            }
 
             query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
@@ -82,10 +82,7 @@ namespace PersonalFinanceManagement.Database.Repository
         public async Task ImportTransactions(List<TransactionEntity> transactions)
         {
             await _dbContext.Transactions.AddRangeAsync(transactions);
-            if (transactions.Count == 0)
-            {
-                await _dbContext.SaveChangesAsync();
-            }
+            await _dbContext.SaveChangesAsync();
             
         }
     }

@@ -12,7 +12,7 @@ namespace PersonalFinanceManagement.Migrations
                 {
                     code = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    parentCode = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
+                    parentCode = table.Column<string>(type: "character varying(1)", maxLength: 1, nullable: true)
                 },
                 constraints: table =>
                 {

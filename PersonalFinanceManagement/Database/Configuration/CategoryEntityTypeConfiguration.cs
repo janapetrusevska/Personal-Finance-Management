@@ -19,7 +19,7 @@ namespace PersonalFinanceManagement.Database.Configuration
             builder.ToTable("categories");
             builder.HasKey(x => x.code); //primary key
             builder.Property(x => x.name).IsRequired().HasMaxLength(50);
-            builder.Property(x => x.parentCode).HasMaxLength(255);
+            builder.Property(x => x.parentCode).HasMaxLength(1);
         }
     }
 }

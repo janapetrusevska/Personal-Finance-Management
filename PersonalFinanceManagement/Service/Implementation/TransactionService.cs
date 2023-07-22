@@ -22,7 +22,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, string startDate, string endDate, int page, int pageSize, SortOrder sortOrder, string sortBy)
+        public async Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, DateTime startDate, DateTime endDate, int page, int pageSize, SortOrder sortOrder, string sortBy)
         {
             var pagedSortedList = await _repository.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
             return _mapper.Map<PagedSortedList<Transaction>>(pagedSortedList);

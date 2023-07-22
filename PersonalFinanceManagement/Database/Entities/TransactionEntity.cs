@@ -12,7 +12,7 @@ namespace PersonalFinanceManagement.Database.Entities
     {
         public string id { get; set; }
         public string name { get; set; }
-        public string date { get; set; }
+        public DateTime date { get; set; }
         public Direction direction { get; set; }
         public double amount { get; set; }
         public string description { get; set; }
