@@ -38,6 +38,18 @@ namespace PersonalFinanceManagement.Database.Repository
                     case "kind":
                         query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.kind) : query.OrderByDescending(x => x.kind);
                         break;
+                    case "direction":
+                        query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.direction) : query.OrderByDescending(x => x.direction);
+                        break;
+                    case "name":
+                        query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.name) : query.OrderByDescending(x => x.name);
+                        break;
+                    case "amount":
+                        query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.amount) : query.OrderByDescending(x => x.amount);
+                        break;
+                    case "mcc":
+                        query = sortOrder == SortOrder.asc ? query.OrderBy(x => x.mcc) : query.OrderByDescending(x => x.mcc);
+                        break;
                 }
             }
             else

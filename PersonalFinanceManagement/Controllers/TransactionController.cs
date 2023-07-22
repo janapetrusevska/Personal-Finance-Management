@@ -71,6 +71,7 @@ namespace PersonalFinanceManagement.Controllers
         [HttpPost("{id}/categorize")]
         public IActionResult CategorizeTransactions()
         {
+
             return Ok();
         }
 
