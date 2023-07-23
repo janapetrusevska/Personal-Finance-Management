@@ -49,6 +49,7 @@ namespace PersonalFinanceManagement
             services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddScoped<ICsvParserService, CsvParserService>();
+            services.AddScoped<ISpendingAnalyticsService, SpendingAnalyticsService>();
 
             //AutoMapper
             services.AddAutoMapper(typeof(AutoMapperProfile));

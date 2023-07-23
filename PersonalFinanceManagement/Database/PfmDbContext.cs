@@ -15,6 +15,7 @@ namespace PersonalFinanceManagement.Database
 
         public DbSet<CategoryEntity> Categories { get; set; }
 
+
         public PfmDbContext(DbContextOptions options) : base(options)
         {
         }

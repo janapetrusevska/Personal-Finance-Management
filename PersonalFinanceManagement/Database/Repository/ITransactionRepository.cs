@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace PersonalFinanceManagement.Database.Repository
         Task<Boolean> ImportTransactions(List<TransactionEntity> transactions);
         Task<TransactionEntity> GetTransactionById(string id);
         Task UpdateTransaction(TransactionEntity transactionEntity);
+        Task<List<TransactionEntity>> GetTransactionsForAnalytics(string catCode = null, DateTime? startDate = null, DateTime? endDate = null, string direction = null);
     }
 }

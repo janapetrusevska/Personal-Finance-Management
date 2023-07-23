@@ -18,6 +18,12 @@ namespace PersonalFinanceManagement.Database.Repository
             _dbContext = dbContext;
         }
 
+        public async Task<List<CategoryEntity>> GetAllCategories()
+        {
+            var categories = await _dbContext.Categories.ToListAsync();
+            return categories;
+        }
+
         public async Task<List<CategoryEntity>> GetCategories(string parentCode = null)
         {
             var query = _dbContext.Categories.AsQueryable();

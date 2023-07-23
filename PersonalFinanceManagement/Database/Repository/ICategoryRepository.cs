@@ -12,5 +12,7 @@ namespace PersonalFinanceManagement.Database.Repository
         Task<List<CategoryEntity>> GetCategories(string parentCode = null);
         Task<Boolean> ImportCategories(List<CategoryEntity> categories);
         Task<CategoryEntity> GetCategoryByCode(string code);
+
+        Task<List<CategoryEntity>> GetAllCategories();
     }
 }

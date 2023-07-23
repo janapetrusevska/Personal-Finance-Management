@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
 using PersonalFinanceManagement.Models.Enumerations;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace PersonalFinanceManagement.Database.Repository
         {
             _dbContext = dbContext;
         }
-
         public async Task<TransactionEntity> GetTransactionById(string id)
         {
             var transaction = await _dbContext.Transactions.SingleOrDefaultAsync(x => x.id == id);
@@ -98,6 +98,43 @@ namespace PersonalFinanceManagement.Database.Repository
             };
         }
 
+        public async Task<List<TransactionEntity>> GetTransactionsForAnalytics(string catCode = null, DateTime? startDate = null, DateTime? endDate = null, string direction = null)
+        {
+            List<TransactionEntity> transactions = new List<TransactionEntity>();
+            if (catCode != null)
+            {
+                 transactions = await _dbContext.Transactions.Where(x => x.catCode == catCode).ToListAsync();
+            }
+            else
+            {
+                 transactions = await _dbContext.Transactions.ToListAsync();
+            }
+            
+            var query = transactions.AsQueryable();
+            query = query.OrderBy(x => x.id);
+
+            if (startDate != DateTime.MinValue)
+            {
+                query = query.Where(x => x.date >= startDate.Value);
+            }
+
+            if (endDate != DateTime.MinValue)
+            {
+                query = query.Where(x => x.date <= endDate.Value);
+            }
+
+            if (!String.IsNullOrEmpty(direction))
+            {
+                if (Enum.TryParse<Direction>(direction, true, out var parsedDirection))
+                {
+                    query = query.Where(x => x.direction == parsedDirection);
+                }
+            }
+
+            transactions = query.ToList();
+
+            return transactions;
+        }
         public async Task<Boolean> ImportTransactions(List<TransactionEntity> transactions)
         {
             bool newTransactionsAdded = false;
