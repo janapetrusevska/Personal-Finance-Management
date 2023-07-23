@@ -19,6 +19,13 @@ namespace PersonalFinanceManagement.Database.Repository
             _dbContext = dbContext;
         }
 
+        public async Task<TransactionEntity> GetTransactionById(string id)
+        {
+            var transaction = await _dbContext.Transactions.SingleOrDefaultAsync(x => x.id == id);
+
+            return transaction;
+        }
+
         public async Task<PagedSortedList<TransactionEntity>> GetTransactions(string transactionKind = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 10, SortOrder sortOrder = SortOrder.asc, string sortBy = null)
         {
             var query = _dbContext.Transactions.AsQueryable();
@@ -96,6 +103,26 @@ namespace PersonalFinanceManagement.Database.Repository
             await _dbContext.Transactions.AddRangeAsync(transactions);
             await _dbContext.SaveChangesAsync();
             
+        }
+
+        public async Task UpdateTransaction(TransactionEntity transactionEntity)
+        {
+            var existingTransaction = await _dbContext.Transactions.FindAsync(transactionEntity.id);
+
+            if (existingTransaction != null)
+            {
+                existingTransaction.name = transactionEntity.name;
+                existingTransaction.date = transactionEntity.date;
+                existingTransaction.direction = transactionEntity.direction;
+                existingTransaction.amount = transactionEntity.amount;
+                existingTransaction.description = transactionEntity.description;
+                existingTransaction.currency = transactionEntity.currency;
+                existingTransaction.mcc = transactionEntity.mcc;
+                existingTransaction.kind = transactionEntity.kind;
+                existingTransaction.catCode = transactionEntity.catCode;
+
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

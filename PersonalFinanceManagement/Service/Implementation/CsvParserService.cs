@@ -3,7 +3,6 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
-using PersonalFinanceManagement.Models.Category;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

@@ -2,7 +2,6 @@
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Models;
-using PersonalFinanceManagement.Models.Category;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +24,12 @@ namespace PersonalFinanceManagement.Service.Implementation
         {
             var categoryList = await _repository.GetCategories(parentId);
             return _mapper.Map<List<Category>>(categoryList);
+        }
+
+        public async Task<Category> GetCategoryByCode(string code)
+        {
+            var category = await _repository.GetCategoryByCode(code);
+            return _mapper.Map<Category>(category);
         }
 
         public async Task<List<Category>> ImportCategories(List<Category> categories)

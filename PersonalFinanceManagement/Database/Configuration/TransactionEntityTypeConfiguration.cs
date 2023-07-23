@@ -22,7 +22,13 @@ namespace PersonalFinanceManagement.Database.Configuration
             builder.Property(x => x.currency).IsRequired().HasMaxLength(3);
             builder.Property(x => x.mcc).HasConversion<string>().HasMaxLength(4);
             builder.Property(x => x.kind).IsRequired().HasConversion<string>().HasMaxLength(3);
+
             builder.Property(x => x.catCode);
+            //foreign key
+            builder.HasOne<CategoryEntity>()
+                .WithMany()
+                .HasForeignKey(x => x.catCode)
+                .HasPrincipalKey(x => x.code);
         }
     }
 }

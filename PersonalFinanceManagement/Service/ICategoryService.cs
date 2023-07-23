@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.Models;
-using PersonalFinanceManagement.Models.Category;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +12,7 @@ namespace PersonalFinanceManagement.Service
         Task<List<Category>> GetCategories(string parentId);
 
         Task<List<Category>> ImportCategories(List<Category> categories);
+
+        Task<Category> GetCategoryByCode(string code);
     }
 }

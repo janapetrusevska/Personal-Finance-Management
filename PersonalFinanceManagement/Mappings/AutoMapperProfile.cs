@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
-using PersonalFinanceManagement.Models.Category;
 using System;
 
 namespace PersonalFinanceManagement.Mappings

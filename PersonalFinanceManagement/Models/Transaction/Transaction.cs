@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace PersonalFinanceManagement.Models
         [Required]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TransactionKind Kind { get; set; }
-        public string CatCode { get; set; } //CategoryCode
+        public string CatCode { get; set; } 
+        [ForeignKey("CatCode")]
+        public Category Category { get; set; }
     }
 }

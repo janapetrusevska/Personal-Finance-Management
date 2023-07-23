@@ -3,6 +3,7 @@ using PersonalFinanceManagement.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,5 +21,7 @@ namespace PersonalFinanceManagement.Database.Entities
         public string mcc { get; set; }
         public TransactionKind kind { get; set; }
         public string catCode { get; set; }
+        [ForeignKey("catCode")]
+        public CategoryEntity category{ get; set; }
     }
 }

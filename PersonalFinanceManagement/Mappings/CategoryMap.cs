@@ -1,6 +1,5 @@
 ﻿using CsvHelper.Configuration;
 using PersonalFinanceManagement.Models;
-using PersonalFinanceManagement.Models.Category;
 using System;
 using System.Collections.Generic;
 using System.Linq;

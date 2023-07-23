@@ -35,6 +35,13 @@ namespace PersonalFinanceManagement.Database.Repository
             return categories;
         }
 
+        public async Task<CategoryEntity> GetCategoryByCode(string code)
+        {
+            var category = await _dbContext.Categories.SingleOrDefaultAsync(x => x.code == code);
+
+            return category;
+        }
+
         public async Task ImportCategories(List<CategoryEntity> categories)
         {
             await _dbContext.Categories.AddRangeAsync(categories);

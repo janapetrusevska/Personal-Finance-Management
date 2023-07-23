@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PersonalFinanceManagement.Models.Category
+namespace PersonalFinanceManagement.Models.CategoryFolder
 {
     public class SingleCategorySplit
     {

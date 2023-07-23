@@ -23,15 +23,17 @@ namespace PersonalFinanceManagement.Controllers
     public class TransactionController : ControllerBase
     {
         ITransactionService _transactionService;
+        ICategoryService _categoryService;
         private readonly ILogger<TransactionController> _logger;
-        private readonly PfmDbContext _transactionContext;
+        private readonly PfmDbContext _context;
         private readonly ICsvParserService _csvParserService;
 
-        public TransactionController(ILogger<TransactionController> logger, ITransactionService transactionService, PfmDbContext transactionContext, ICsvParserService csvParserService)
+        public TransactionController(ILogger<TransactionController> logger, ITransactionService transactionService, ICategoryService categoryService, PfmDbContext context, ICsvParserService csvParserService)
         {
             _logger = logger;
             _transactionService = transactionService;
-            _transactionContext = transactionContext;
+            _categoryService = categoryService;
+            _context = context;
             _csvParserService = csvParserService;
         }
 
@@ -50,7 +52,7 @@ namespace PersonalFinanceManagement.Controllers
             {
                 return BadRequest("No file uploaded");
             }
-            if (_transactionContext.Transactions.Any())
+            if (_context.Transactions.Any())
             {
                 return Ok("The database is already filled");
             }
@@ -69,10 +71,16 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpPost("{id}/categorize")]
-        public IActionResult CategorizeTransactions()
+        public IActionResult CategorizeTransactions(string id)
         {
+            var transactionTask = _transactionService.GetTransactionById(id);
+            //var transaction = transactionTask.Result;
+            var catCode = transactionTask.Result.CatCode;
+            var categoryTask = _categoryService.GetCategoryByCode(catCode);
+            var category = categoryTask.Result;
 
-            return Ok();
+            //_transactionService.UpdateCategoryForTransaction(transaction, category);
+            return Ok(category);
         }
 
         [HttpPost("auto-categorize")]

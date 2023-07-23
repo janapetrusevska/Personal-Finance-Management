@@ -1,4 +1,5 @@
-﻿using PersonalFinanceManagement.Models.Category;
+﻿using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,6 @@ namespace PersonalFinanceManagement.Models
 {
     public class TransactionWithSplits : Transaction
     {
-        public List<Models.Category.SingleCategorySplit> Splits { get; set; }
+        public List<SingleCategorySplit> Splits { get; set; }
     }
 }
