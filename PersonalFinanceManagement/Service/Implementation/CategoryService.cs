@@ -32,13 +32,13 @@ namespace PersonalFinanceManagement.Service.Implementation
             return _mapper.Map<Category>(category);
         }
 
-        public async Task<List<Category>> ImportCategories(List<Category> categories)
+        public async Task<Boolean> ImportCategories(List<Category> categories)
         {
             List<CategoryEntity> categoryEntities = _mapper.Map<List<CategoryEntity>>(categories);
 
-            await _repository.ImportCategories(categoryEntities);
+            var result = await _repository.ImportCategories(categoryEntities);
 
-            return categories;
+            return result;
         }
     }
 }

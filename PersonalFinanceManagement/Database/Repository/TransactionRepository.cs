@@ -98,11 +98,27 @@ namespace PersonalFinanceManagement.Database.Repository
             };
         }
 
-        public async Task ImportTransactions(List<TransactionEntity> transactions)
+        public async Task<Boolean> ImportTransactions(List<TransactionEntity> transactions)
         {
-            await _dbContext.Transactions.AddRangeAsync(transactions);
+            bool newTransactionsAdded = false;
+
+            foreach (var transaction in transactions)
+            {
+                var existingTransaction = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.id == transaction.id);
+
+                if (existingTransaction != null)
+                {
+                    existingTransaction = transaction;
+                }
+                else
+                {
+                    _dbContext.Transactions.Add(transaction);
+                    newTransactionsAdded = true;
+                }
+            }
             await _dbContext.SaveChangesAsync();
-            
+            return newTransactionsAdded;
+
         }
 
         public async Task UpdateTransaction(TransactionEntity transactionEntity)

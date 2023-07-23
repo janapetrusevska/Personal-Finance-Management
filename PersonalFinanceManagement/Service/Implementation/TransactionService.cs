@@ -36,24 +36,13 @@ namespace PersonalFinanceManagement.Service.Implementation
             return _mapper.Map<PagedSortedList<Transaction>>(pagedSortedList);
         }
 
-        public async Task<PagedSortedList<Transaction>> ImportTransactions(List<Transaction> transactions)
+        public async Task<Boolean> ImportTransactions(List<Transaction> transactions)
         {
             List<TransactionEntity> transactionEntities = _mapper.Map<List<TransactionEntity>>(transactions);
 
-            await _transactionRepository.ImportTransactions(transactionEntities);
+            var result = await _transactionRepository.ImportTransactions(transactionEntities);
 
-            var pagedSortedList = new PagedSortedList<Transaction>();
-
-            pagedSortedList.TotalCount = transactions.Count;
-            pagedSortedList.PageSize = transactions.Count;
-            pagedSortedList.Page = 1;
-            pagedSortedList.TotalPages = 1;
-            pagedSortedList.SortOrder = SortOrder.asc;
-            pagedSortedList.SortBy = null;
-
-            pagedSortedList.Items = transactions;
-
-            return _mapper.Map<PagedSortedList<Transaction>>(pagedSortedList);
+            return result;
         }
 
         public async Task<TransactionEntity> UpdateCategoryForTransaction(Transaction transaction, Category category)

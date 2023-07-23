@@ -10,7 +10,7 @@ namespace PersonalFinanceManagement.Database.Repository
     public interface ICategoryRepository
     {
         Task<List<CategoryEntity>> GetCategories(string parentCode = null);
-        Task ImportCategories(List<CategoryEntity> categories);
+        Task<Boolean> ImportCategories(List<CategoryEntity> categories);
         Task<CategoryEntity> GetCategoryByCode(string code);
     }
 }

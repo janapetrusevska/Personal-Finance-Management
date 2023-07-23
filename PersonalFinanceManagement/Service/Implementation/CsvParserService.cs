@@ -1,6 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
+using PersonalFinanceManagement.Database.Entities;
+using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
 using System;
@@ -14,6 +16,11 @@ namespace PersonalFinanceManagement.Service.Implementation
 {
     public class CsvParserService : ICsvParserService
     {
+        private readonly ICategoryRepository _categoryRepository;
+        public CsvParserService(ICategoryRepository categoryRepository)
+        {
+            _categoryRepository = categoryRepository;
+        }
         public List<Transaction> ReadingTransactionsFromFile(IFormFile csvFile)
         {
             List<Transaction> transactions = new List<Transaction>();

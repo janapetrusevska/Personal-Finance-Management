@@ -52,16 +52,20 @@ namespace PersonalFinanceManagement.Controllers
             {
                 return BadRequest("No file uploaded");
             }
-            if (_context.Transactions.Any())
-            {
-                return Ok("The database is already filled");
-            }
 
+            //reading all transactions from the file
             var transactions = _csvParserService.ReadingTransactionsFromFile(csvFile);
 
             var result = await _transactionService.ImportTransactions(transactions);
 
-            return Ok("CSV file imported successfully");
+            if (result)
+            {
+                return Ok("All new transactions were added!");
+            }
+            else
+            {
+                return Ok("All transactions have been updated");
+            }
         }
 
         [HttpPost("{id}/split")]

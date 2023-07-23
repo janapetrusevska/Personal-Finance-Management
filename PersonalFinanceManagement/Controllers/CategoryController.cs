@@ -42,16 +42,20 @@ namespace PersonalFinanceManagement.Controllers
             {
                 return BadRequest("No file uploaded");
             }
-            if (_context.Categories.Any())
-            {
-                return Ok("The database is already filled with categories");
-            }
 
+            //reading all of the categories from the file
             var categories = _csvParserService.ReadingCategoriesFromFile(csvFile);
 
-            var result = await _categoryService.ImportCategories(categories);
 
-            return Ok("CSV file imported successfully");
+            var result = await _categoryService.ImportCategories(categories);
+            if (result)
+            {
+                return Ok("All new categories were added!");
+            }
+            else
+            {
+                return Ok("All categories have been updated");
+            }
         }
     }
 }

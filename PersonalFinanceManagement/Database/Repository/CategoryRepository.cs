@@ -42,10 +42,26 @@ namespace PersonalFinanceManagement.Database.Repository
             return category;
         }
 
-        public async Task ImportCategories(List<CategoryEntity> categories)
+        public async Task<Boolean> ImportCategories(List<CategoryEntity> categories)
         {
-            await _dbContext.Categories.AddRangeAsync(categories);
+            bool newCategoriesAdded = false;
+
+            foreach (var category in categories)
+            {
+                var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.code == category.code);
+
+                if (existingCategory != null)
+                {
+                    existingCategory = category;
+                }
+                else
+                {
+                    _dbContext.Categories.Add(category);
+                    newCategoriesAdded = true;
+                }
+            }
             await _dbContext.SaveChangesAsync();
+            return newCategoriesAdded;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PersonalFinanceManagement.Service
     {
         Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, DateTime startDate, DateTime endDate, int page, int pageSize, SortOrder sortOrder, string? sortBy);
 
-        Task<PagedSortedList<Transaction>> ImportTransactions(List<Transaction> transactions);
+        Task<Boolean> ImportTransactions(List<Transaction> transactions);
 
         Task<Transaction> GetTransactionById(string id);
 
