@@ -1,4 +1,5 @@
-﻿using PersonalFinanceManagement.Models.Enumerations;
+﻿using PersonalFinanceManagement.Models.CategoryFolder;
+using PersonalFinanceManagement.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -32,5 +33,6 @@ namespace PersonalFinanceManagement.Models
         public string CatCode { get; set; } 
         [ForeignKey("CatCode")]
         public Category Category { get; set; }
+        public List<SingleCategorySplit> Splits { get; set; }
     }
 }

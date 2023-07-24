@@ -1,4 +1,5 @@
 ﻿using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
 using PersonalFinanceManagement.Models.Enumerations;
 using System;
 using System.Collections.Generic;
@@ -23,5 +24,7 @@ namespace PersonalFinanceManagement.Database.Entities
         public string catCode { get; set; }
         [ForeignKey("catCode")]
         public CategoryEntity category{ get; set; }
+        [NotMapped]
+        public ICollection<SplitsEntity> splits { get; set; }
     }
 }

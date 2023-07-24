@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
+using PersonalFinanceManagement.Models.Dto;
 using PersonalFinanceManagement.Models.Messages;
 using PersonalFinanceManagement.Service;
 using System;
@@ -128,9 +130,41 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpPost("{id}/split")]
-        public IActionResult SplitTransactions()
+        public async Task<IActionResult> SplitTransactions(string id, [FromBody] List<SingleCategorySplit> splits)
         {
-            return Ok();
+            var transaction = await _transactionService.GetTransactionById(id);
+
+            var messages = new List<MessageDetails>();
+            if (transaction.Id == null)
+            {
+                //if the transaction wasn't found
+                messages.Add(new MessageDetails
+                {
+                    StatusCode = 400,
+                    Message = "The transaction with that id doesn't exist!"
+                });
+                return new ObjectResult(messages);
+            }
+            
+            var categoryCodes = splits.Select(s => s.CatCode).ToList();
+            var existingCategories = new List<Category>();
+            foreach (String s in categoryCodes)
+            {
+                var category = await _categoryService.GetCategoryByCode(s);
+                if (category == null)
+                {
+                    messages.Add(new MessageDetails
+                    {
+                        StatusCode = 400,
+                        Message = category.Code+" is an invalid value."
+                    });
+                }
+                existingCategories.Add(category);
+            }
+
+            var transactionSplitted = _transactionService.ImportSplitsInTransaction(transaction, splits);
+
+            return Ok(transactionSplitted);
         }
 
         [HttpPost("{id}/categorize")]

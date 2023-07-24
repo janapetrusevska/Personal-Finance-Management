@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
+using PersonalFinanceManagement.Models.Dto;
 using System;
 
 namespace PersonalFinanceManagement.Mappings
@@ -19,7 +21,8 @@ namespace PersonalFinanceManagement.Mappings
                 .ForMember(t => t.Kind, e => e.MapFrom(x => x.kind))
                 .ForMember(t => t.Currency, e => e.MapFrom(x => x.currency))
                 .ForMember(t => t.MccCode, e => e.MapFrom(x => x.mcc))
-                .ForMember(t => t.CatCode, e => e.MapFrom(x => x.catCode));
+                .ForMember(t => t.CatCode, e => e.MapFrom(x => x.catCode))
+                .ForMember(t => t.Splits, e => e.MapFrom(x => x.splits));
 
             CreateMap<Transaction, TransactionEntity>()
                 .ForMember(t => t.id, e => e.MapFrom(x => x.Id))
@@ -31,7 +34,8 @@ namespace PersonalFinanceManagement.Mappings
                 .ForMember(t => t.kind, e => e.MapFrom(x => x.Kind))
                 .ForMember(t => t.currency, e => e.MapFrom(x => x.Currency))
                 .ForMember(t => t.mcc, e => e.MapFrom(x => x.MccCode))
-                .ForMember(t => t.catCode, e => e.MapFrom(x => x.CatCode));
+                .ForMember(t => t.catCode, e => e.MapFrom(x => x.CatCode))
+                .ForMember(t => t.splits, e => e.MapFrom(x => x.Splits));
             CreateMap<PagedSortedList<TransactionEntity>, PagedSortedList<Transaction>>();
 
             CreateMap<CategoryEntity, Category>()
@@ -43,6 +47,16 @@ namespace PersonalFinanceManagement.Mappings
                 .ForMember(t => t.code, e => e.MapFrom(x => x.Code))
                 .ForMember(t => t.name, e => e.MapFrom(x => x.Name))
                 .ForMember(t => t.parentCode, e => e.MapFrom(x => x.ParentCode));
+
+            CreateMap<SingleCategorySplit, SplitsEntity>()
+                .ForMember(t => t.amount, e => e.MapFrom(x => x.Amount))
+                .ForMember(t => t.catCode, e => e.MapFrom(x => x.CatCode));
+
+            CreateMap<SplitsEntity, SingleCategorySplit>()
+                .ForMember(t => t.Amount, e => e.MapFrom(src => src.amount))
+                .ForMember(t => t.CatCode, e => e.MapFrom(src => src.catCode));
+
+            CreateMap<SplitsEntity, SplitDto>();
         }
 
         protected internal AutoMapperProfile(string profileName, Action<IProfileExpression> configurationAction) : base(profileName, configurationAction)

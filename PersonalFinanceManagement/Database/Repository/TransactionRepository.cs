@@ -208,21 +208,20 @@ namespace PersonalFinanceManagement.Database.Repository
 
         }
 
-        public async Task UpdateTransaction(TransactionEntity transactionEntity)
+        public async Task<TransactionEntity> AddTransaction(TransactionEntity transactionEntity)
+        {
+            _dbContext.Transactions.Add(transactionEntity);
+            await _dbContext.SaveChangesAsync();
+            return transactionEntity;
+        }
+
+        public async Task UpdateTransactionsSplits(TransactionEntity transactionEntity)
         {
             var existingTransaction = await _dbContext.Transactions.FindAsync(transactionEntity.id);
 
             if (existingTransaction != null)
             {
-                existingTransaction.name = transactionEntity.name;
-                existingTransaction.date = transactionEntity.date;
-                existingTransaction.direction = transactionEntity.direction;
-                existingTransaction.amount = transactionEntity.amount;
-                existingTransaction.description = transactionEntity.description;
-                existingTransaction.currency = transactionEntity.currency;
-                existingTransaction.mcc = transactionEntity.mcc;
-                existingTransaction.kind = transactionEntity.kind;
-                existingTransaction.catCode = transactionEntity.catCode;
+                existingTransaction.splits = transactionEntity.splits;
 
                 await _dbContext.SaveChangesAsync();
             }

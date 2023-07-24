@@ -4,6 +4,8 @@ using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
+using PersonalFinanceManagement.Models.Dto;
 using PersonalFinanceManagement.Models.Messages;
 using System;
 using System.Collections.Generic;
@@ -16,10 +18,12 @@ namespace PersonalFinanceManagement.Service.Implementation
     {
 
         private readonly ITransactionRepository _transactionRepository;
+        private readonly ISplitsRepository _splitRepository;
         private readonly IMapper _mapper;
-        public TransactionService(ITransactionRepository transactionRepository, IMapper mapper)
+        public TransactionService(ITransactionRepository transactionRepository, IMapper mapper, ISplitsRepository splitsRepository)
         {
             _transactionRepository = transactionRepository;
+            _splitRepository = splitsRepository;
             _mapper = mapper;
         }
 
@@ -52,15 +56,31 @@ namespace PersonalFinanceManagement.Service.Implementation
             return result;
         }
 
-        public async Task<TransactionEntity> UpdateCategoryForTransaction(Transaction transaction, Category category)
+        public async Task<Transaction> ImportSplitsInTransaction(Transaction transaction, List<SingleCategorySplit> splits)
         {
-            var transactionEntity = await _transactionRepository.GetTransactionById(transaction.Id);
-            var categoryEntity = _mapper.Map<CategoryEntity>(category);
-            transactionEntity.category = categoryEntity;
+            transaction.Splits.Clear();
 
-            await _transactionRepository.UpdateTransaction(transactionEntity);
+            foreach (var splitRequest in splits)
+            {
+                var split = new SingleCategorySplit
+                {
+                    Amount = splitRequest.Amount,
+                    CatCode = splitRequest.CatCode
+                };
+                transaction.Splits.Add(split);
+            }
+            var transactionEntity = _mapper.Map<TransactionEntity>(transaction);
 
-            return transactionEntity;
+            //updating the transaction's splits
+            await _transactionRepository.UpdateTransactionsSplits(transactionEntity);
+
+            //adding the splits
+
+            var splitsEntities = _mapper.Map<List<SplitsEntity>>(splits);
+            await _splitRepository.ImportSplits(splitsEntities);
+
+            transaction = _mapper.Map<Transaction>(transactionEntity);
+            return transaction;
         }
     }
     

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
+using PersonalFinanceManagement.Models.Dto;
 using PersonalFinanceManagement.Models.Messages;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,8 @@ namespace PersonalFinanceManagement.Service
 
         Task<Transaction> GetTransactionById(string id);
 
-        Task<TransactionEntity> UpdateCategoryForTransaction(Transaction transaction, Category category);
-
         CustomMessage areTheDatesInvalid(DateTime startDate, DateTime endDate);
+
+        Task<Transaction> ImportSplitsInTransaction(Transaction transaction, List<SingleCategorySplit> splits);
     }
 }

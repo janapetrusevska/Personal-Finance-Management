@@ -2,6 +2,7 @@
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             _repository = repository;
             _mapper = mapper;
         }
+
 
         public async Task<List<Category>> GetCategories(string parentId)
         {

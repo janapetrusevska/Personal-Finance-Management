@@ -15,6 +15,7 @@ namespace PersonalFinanceManagement.Database
 
         public DbSet<CategoryEntity> Categories { get; set; }
 
+        public DbSet<SplitsEntity> Splits { get; set; }
 
         public PfmDbContext(DbContextOptions options) : base(options)
         {
@@ -33,6 +34,10 @@ namespace PersonalFinanceManagement.Database
             modelBuilder.ApplyConfiguration(
                 new CategoryEntityTypeConfiguration()
                 );
+            modelBuilder.ApplyConfiguration(
+               new SplitsEntityTypeConfiguration()
+               );
+
             base.OnModelCreating(modelBuilder);
         }
 

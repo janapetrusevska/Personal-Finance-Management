@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PersonalFinanceManagement.Database;
@@ -9,9 +10,10 @@ using PersonalFinanceManagement.Database;
 namespace PersonalFinanceManagement.Migrations
 {
     [DbContext(typeof(PfmDbContext))]
-    partial class TransactionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724192430_splitsInTransactionsUpdated")]
+    partial class splitsInTransactionsUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,12 +42,7 @@ namespace PersonalFinanceManagement.Migrations
 
             modelBuilder.Entity("PersonalFinanceManagement.Database.Entities.SplitsEntity", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
                     b.Property<double>("amount")
-                        .IsRequired()
                         .HasColumnType("double precision");
 
                     b.Property<string>("catCode")
@@ -53,7 +50,15 @@ namespace PersonalFinanceManagement.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("transactionId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("transactionid")
+                        .HasColumnType("text");
+
+                    b.HasIndex("transactionId");
+
+                    b.HasIndex("transactionid");
 
                     b.ToTable("splits");
                 });
@@ -109,6 +114,19 @@ namespace PersonalFinanceManagement.Migrations
                     b.HasIndex("categorycode");
 
                     b.ToTable("transactions");
+                });
+
+            modelBuilder.Entity("PersonalFinanceManagement.Database.Entities.SplitsEntity", b =>
+                {
+                    b.HasOne("PersonalFinanceManagement.Database.Entities.TransactionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("transactionId");
+
+                    b.HasOne("PersonalFinanceManagement.Database.Entities.TransactionEntity", "transaction")
+                        .WithMany()
+                        .HasForeignKey("transactionid");
+
+                    b.Navigation("transaction");
                 });
 
             modelBuilder.Entity("PersonalFinanceManagement.Database.Entities.TransactionEntity", b =>

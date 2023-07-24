@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PersonalFinanceManagement.Database;
@@ -9,9 +10,10 @@ using PersonalFinanceManagement.Database;
 namespace PersonalFinanceManagement.Migrations
 {
     [DbContext(typeof(PfmDbContext))]
-    partial class TransactionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724212752_splitsUpdate2")]
+    partial class splitsUpdate2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,20 +42,14 @@ namespace PersonalFinanceManagement.Migrations
 
             modelBuilder.Entity("PersonalFinanceManagement.Database.Entities.SplitsEntity", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<double>("amount")
-                        .IsRequired()
-                        .HasColumnType("double precision");
-
                     b.Property<string>("catCode")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)");
 
-                    b.HasKey("Id");
+                    b.Property<double>("amount")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("catCode", "amount");
 
                     b.ToTable("splits");
                 });
