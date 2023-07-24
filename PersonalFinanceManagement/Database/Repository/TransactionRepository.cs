@@ -4,6 +4,7 @@ using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
 using PersonalFinanceManagement.Models.CategoryFolder;
 using PersonalFinanceManagement.Models.Enumerations;
+using PersonalFinanceManagement.Models.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +20,64 @@ namespace PersonalFinanceManagement.Database.Repository
         {
             _dbContext = dbContext;
         }
+
+        public CustomMessage CheckForInvalidDates(DateTime? startDate = null, DateTime? endDate = null)
+        { 
+            var messages = new List<MessageDetails>();
+
+            if (startDate.HasValue && startDate.Value!=DateTime.MinValue && startDate.Value.Kind != DateTimeKind.Utc)
+            {
+                messages.Add(new MessageDetails
+                {
+                    StatusCode = 400,
+                    Message = "startDate must be a valid DateTime in UTC format."
+                });
+            }
+            if (endDate.HasValue && endDate.Value!=DateTime.MinValue && endDate.Value.Kind != DateTimeKind.Utc)
+            {
+                messages.Add(new MessageDetails
+                {
+                    StatusCode = 400,
+                    Message = "endDate must be a valid DateTime in UTC format."
+                });
+            }
+            if (messages.Count > 0)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = messages
+                };
+                return customMessage;
+            }
+            else
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = new List<MessageDetails>()
+                };
+                return customMessage;
+            }
+        }
+
         public async Task<TransactionEntity> GetTransactionById(string id)
         {
             var transaction = await _dbContext.Transactions.SingleOrDefaultAsync(x => x.id == id);
+            if (transaction == null)
+            {
+                //when it can't find a transaction with that id we send an empty one
+                return new TransactionEntity();
+            }
 
             return transaction;
         }
 
         public async Task<PagedSortedList<TransactionEntity>> GetTransactions(string transactionKind = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 10, SortOrder sortOrder = SortOrder.asc, string sortBy = null)
         {
+
+            if (pageSize > 100)
+            {
+                pageSize = 100;
+            }
             var query = _dbContext.Transactions.AsQueryable();
             var totalCount = query.Count();
             var totalPages = (int)Math.Ceiling(totalCount *1.0 / pageSize);
@@ -135,9 +185,9 @@ namespace PersonalFinanceManagement.Database.Repository
 
             return transactions;
         }
-        public async Task<Boolean> ImportTransactions(List<TransactionEntity> transactions)
+        public async Task<int> ImportTransactions(List<TransactionEntity> transactions)
         {
-            bool newTransactionsAdded = false;
+            var count = 0;
 
             foreach (var transaction in transactions)
             {
@@ -150,11 +200,11 @@ namespace PersonalFinanceManagement.Database.Repository
                 else
                 {
                     _dbContext.Transactions.Add(transaction);
-                    newTransactionsAdded = true;
+                    count++;
                 }
             }
             await _dbContext.SaveChangesAsync();
-            return newTransactionsAdded;
+            return count;
 
         }
 

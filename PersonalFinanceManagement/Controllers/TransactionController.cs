@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.Messages;
 using PersonalFinanceManagement.Service;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,39 @@ namespace PersonalFinanceManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTransactions([FromQuery] string transactionKind, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
         {
+            var invalidDatesMessage =  _transactionService.areTheDatesInvalid(startDate, endDate);
+            if (invalidDatesMessage.Message.Count > 0)
+            {
+                return new ObjectResult(invalidDatesMessage);
+            }
+
+            var messages = new List<MessageDetails>();
+
+            if (pageSize<0)
+            {
+                messages.Add(new MessageDetails
+                {
+                    StatusCode = 400,
+                    Message = "PageSize variable has invalid value."
+                });
+            }
+            if (page<0)
+            {
+                messages.Add(new MessageDetails
+                {
+                    StatusCode = 400,
+                    Message = "Page variable has invalid value."
+                });
+            }
+            if (messages.Count > 0)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = messages
+                };
+                return new ObjectResult(customMessage.Message);
+            }
+
             var transactions = await _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
 
             return Ok(transactions);
@@ -48,9 +82,18 @@ namespace PersonalFinanceManagement.Controllers
         [HttpPost("import")]
         public async Task<IActionResult> ImportTransactionsAsync(IFormFile csvFile)
         {
+            var messages = new CustomMessage();
             if (csvFile == null || csvFile.Length == 0)
             {
-                return BadRequest("No file uploaded");
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 400,
+                        Message = "No file uploaded"
+                    }
+                };
+                return new ObjectResult(messages);
             }
 
             //reading all transactions from the file
@@ -58,13 +101,29 @@ namespace PersonalFinanceManagement.Controllers
 
             var result = await _transactionService.ImportTransactions(transactions);
 
-            if (result)
+            if (result>0)
             {
-                return Ok("All new transactions were added!");
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 200,
+                        Message = result+" new transactions have been added!"
+                    }
+                };
+                return new ObjectResult(messages);
             }
             else
             {
-                return Ok("All transactions have been updated");
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 200,
+                        Message = "All transactions have been updated!"
+                    }
+                };
+                return new ObjectResult(messages);
             }
         }
 
@@ -77,13 +136,25 @@ namespace PersonalFinanceManagement.Controllers
         [HttpPost("{id}/categorize")]
         public IActionResult CategorizeTransactions(string id)
         {
+            var messages = new CustomMessage();
             var transactionTask = _transactionService.GetTransactionById(id);
-            //var transaction = transactionTask.Result;
+            if (transactionTask.Result.Id == null)
+            {
+                //if the transaction wasn't found
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 200,
+                        Message = "The transaction with that id doesn't exist!"
+                    }
+                };
+                return new ObjectResult(messages);
+            }
             var catCode = transactionTask.Result.CatCode;
             var categoryTask = _categoryService.GetCategoryByCode(catCode);
             var category = categoryTask.Result;
 
-            //_transactionService.UpdateCategoryForTransaction(transaction, category);
             return Ok(category);
         }
 

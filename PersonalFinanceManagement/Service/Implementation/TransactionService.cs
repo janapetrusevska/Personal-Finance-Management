@@ -4,6 +4,7 @@ using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,12 @@ namespace PersonalFinanceManagement.Service.Implementation
             _mapper = mapper;
         }
 
+        public CustomMessage areTheDatesInvalid(DateTime startDate, DateTime endDate)
+        {
+            var result =  _transactionRepository.CheckForInvalidDates(startDate, endDate);
+            return result;
+        }
+
         public async Task<Transaction> GetTransactionById(string id)
         {
             var transactionEntity = await _transactionRepository.GetTransactionById(id);
@@ -36,7 +43,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             return _mapper.Map<PagedSortedList<Transaction>>(pagedSortedList);
         }
 
-        public async Task<Boolean> ImportTransactions(List<Transaction> transactions)
+        public async Task<int> ImportTransactions(List<Transaction> transactions)
         {
             List<TransactionEntity> transactionEntities = _mapper.Map<List<TransactionEntity>>(transactions);
 

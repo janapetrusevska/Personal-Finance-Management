@@ -58,7 +58,9 @@ namespace PersonalFinanceManagement.Database.Repository
 
                 if (existingCategory != null)
                 {
-                    existingCategory = category;
+                    existingCategory.name = category.name;
+                    existingCategory.code = category.code;
+                    existingCategory.parentCode = category.parentCode;
                 }
                 else
                 {

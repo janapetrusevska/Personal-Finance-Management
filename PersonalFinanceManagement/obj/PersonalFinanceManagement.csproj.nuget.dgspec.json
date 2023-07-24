@@ -84,6 +84,10 @@
               "target": "Package",
               "version": "[5.0.17, )"
             },
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[15.0.4795.1001, )"
+            },
             "Npgsql": {
               "target": "Package",
               "version": "[5.0.16, )"

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Office.Interop.Excel;
 using PersonalFinanceManagement.Database;
+using PersonalFinanceManagement.Models.Messages;
 using PersonalFinanceManagement.Service;
 using System;
 using System.Collections.Generic;
@@ -32,15 +34,40 @@ namespace PersonalFinanceManagement.Controllers
         {
             var categories = await _categoryService.GetCategories(parentId);
 
-            return Ok(categories);
+            if (categories.Count == 0)
+            {
+                var messages = new CustomMessage
+                {
+                    Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 400,
+                        Message = "The provided parentId doesn't exist"
+                    }
+                }
+                };
+                return new ObjectResult(messages);
+            }
+
+            return new ObjectResult(categories);
         }
 
         [HttpPost("import")]
         public async Task<IActionResult> ImportCategoriesAsync(IFormFile csvFile)
         {
+            var messages = new CustomMessage();
             if (csvFile == null || csvFile.Length == 0)
             {
-                return BadRequest("No file uploaded");
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 400,
+                        Message = "No file uploaded"
+                    }
+                };
+                return new ObjectResult(messages);
             }
 
             //reading all of the categories from the file
@@ -50,11 +77,27 @@ namespace PersonalFinanceManagement.Controllers
             var result = await _categoryService.ImportCategories(categories);
             if (result)
             {
-                return Ok("All new categories were added!");
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 200,
+                        Message = "All new categories have been added!"
+                    }
+                };
+                return new ObjectResult(messages);
             }
             else
             {
-                return Ok("All categories have been updated");
+                messages.Message = new List<MessageDetails>
+                {
+                    new MessageDetails
+                    {
+                        StatusCode = 200,
+                        Message = "All categories have been updated!"
+                    }
+                };
+                return new ObjectResult(messages);
             }
         }
     }
