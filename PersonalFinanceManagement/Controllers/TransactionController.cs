@@ -1,4 +1,5 @@
-﻿using CsvHelper;
+﻿using AutoMapper;
+using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,17 +28,20 @@ namespace PersonalFinanceManagement.Controllers
     {
         ITransactionService _transactionService;
         ICategoryService _categoryService;
+
+        private readonly IMapper _mapper;
         private readonly ILogger<TransactionController> _logger;
         private readonly PfmDbContext _context;
         private readonly ICsvParserService _csvParserService;
 
-        public TransactionController(ILogger<TransactionController> logger, ITransactionService transactionService, ICategoryService categoryService, PfmDbContext context, ICsvParserService csvParserService)
+        public TransactionController(ILogger<TransactionController> logger, ITransactionService transactionService, ICategoryService categoryService, PfmDbContext context, ICsvParserService csvParserService, IMapper mapper)
         {
             _logger = logger;
             _transactionService = transactionService;
             _categoryService = categoryService;
             _context = context;
             _csvParserService = csvParserService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -162,7 +166,13 @@ namespace PersonalFinanceManagement.Controllers
                 existingCategories.Add(category);
             }
 
-            var transactionSplitted = _transactionService.ImportSplitsInTransaction(transaction, splits);
+            if (messages.Count > 0)
+            {
+                return new ObjectResult(messages);
+            }
+
+            Transaction transactionSplitted = await _transactionService.ImportSplitsInTransaction(transaction, splits);
+
 
             return Ok(transactionSplitted);
         }

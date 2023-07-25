@@ -24,6 +24,7 @@ namespace PersonalFinanceManagement.Database.Entities
         public string catCode { get; set; }
         [ForeignKey("catCode")]
         public CategoryEntity category{ get; set; }
+        public ICollection<string> splitIds { get; set; }
         [NotMapped]
         public ICollection<SplitsEntity> splits { get; set; }
     }

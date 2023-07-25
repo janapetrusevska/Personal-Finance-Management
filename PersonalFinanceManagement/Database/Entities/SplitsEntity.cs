@@ -15,9 +15,10 @@ namespace PersonalFinanceManagement.Database.Entities
         public string Id { get; set; }
         public string catCode { get; set; }
         public double amount { get; set; }
-        //public string transactionId { get; set; }
-        //[ForeignKey("transactionId")]
-        //[JsonIgnore]
-        //public TransactionEntity transaction { get; set; }
+        [JsonIgnore]
+        public string transactionId { get; set; }
+        [ForeignKey("transactionId")]
+        [JsonIgnore]
+        public TransactionEntity transactionEntity { get; set; }
     }
 }

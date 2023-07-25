@@ -13,5 +13,6 @@ namespace PersonalFinanceManagement.Models.CategoryFolder
         public string CatCode { get; set; }
         [Required]
         public double Amount { get; set; }
+        public string TransactionId { get; set; }
     }
 }

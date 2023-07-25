@@ -27,6 +27,7 @@ namespace PersonalFinanceManagement.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             modelBuilder.ApplyConfiguration(
                 new TransactionEntityTypeConfiguration()

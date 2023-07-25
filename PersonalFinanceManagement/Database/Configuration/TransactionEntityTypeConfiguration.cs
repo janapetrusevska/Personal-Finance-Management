@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PersonalFinanceManagement.Database.Entities;
+using System;
 
 namespace PersonalFinanceManagement.Database.Configuration
 {
@@ -29,6 +30,12 @@ namespace PersonalFinanceManagement.Database.Configuration
                 .WithMany()
                 .HasForeignKey(x => x.catCode)
                 .HasPrincipalKey(x => x.code);
+
+            builder.HasMany(t => t.splits)
+               .WithOne(s => s.transactionEntity)
+               .HasForeignKey(s => s.transactionId)
+               .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

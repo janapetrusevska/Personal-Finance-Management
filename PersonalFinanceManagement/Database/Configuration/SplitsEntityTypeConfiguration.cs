@@ -20,6 +20,7 @@ namespace PersonalFinanceManagement.Database.Configuration
             builder.HasKey(x => x.Id);
             builder.Property(x => x.catCode).IsRequired().HasMaxLength(1);
             builder.Property(x => x.amount).IsRequired();
+            builder.Property(x => x.transactionId);
         }
     }
 }

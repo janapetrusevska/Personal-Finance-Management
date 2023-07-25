@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PersonalFinanceManagement.Database;
@@ -9,9 +10,10 @@ using PersonalFinanceManagement.Database;
 namespace PersonalFinanceManagement.Migrations
 {
     [DbContext(typeof(PfmDbContext))]
-    partial class TransactionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230725110523_RelationBetweenTransactionAndSplitEntities")]
+    partial class RelationBetweenTransactionAndSplitEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +52,7 @@ namespace PersonalFinanceManagement.Migrations
                     b.Property<string>("catCode")
                         .IsRequired()
                         .HasMaxLength(1)
-                        .HasColumnType("character varying(2)");
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("transactionId")
                         .HasColumnType("text");

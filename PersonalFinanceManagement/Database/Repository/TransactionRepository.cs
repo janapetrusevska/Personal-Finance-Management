@@ -217,12 +217,11 @@ namespace PersonalFinanceManagement.Database.Repository
 
         public async Task UpdateTransactionsSplits(TransactionEntity transactionEntity)
         {
-            var existingTransaction = await _dbContext.Transactions.FindAsync(transactionEntity.id);
+            var existingTransaction = await _dbContext.Transactions.Include(t => t.splits).FirstOrDefaultAsync(t => t.id == transactionEntity.id);
 
             if (existingTransaction != null)
             {
                 existingTransaction.splits = transactionEntity.splits;
-
                 await _dbContext.SaveChangesAsync();
             }
         }

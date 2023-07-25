@@ -65,19 +65,15 @@ namespace PersonalFinanceManagement.Service.Implementation
                 var split = new SingleCategorySplit
                 {
                     Amount = splitRequest.Amount,
-                    CatCode = splitRequest.CatCode
+                    CatCode = splitRequest.CatCode,
+                    TransactionId = transaction.Id
                 };
                 transaction.Splits.Add(split);
             }
             var transactionEntity = _mapper.Map<TransactionEntity>(transaction);
 
-            //updating the transaction's splits
+            //updating the transaction's splits in the database
             await _transactionRepository.UpdateTransactionsSplits(transactionEntity);
-
-            //adding the splits
-
-            var splitsEntities = _mapper.Map<List<SplitsEntity>>(splits);
-            await _splitRepository.ImportSplits(splitsEntities);
 
             transaction = _mapper.Map<Transaction>(transactionEntity);
             return transaction;
