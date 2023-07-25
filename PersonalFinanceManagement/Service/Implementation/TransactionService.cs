@@ -5,7 +5,6 @@ using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Models;
 using PersonalFinanceManagement.Models.CategoryFolder;
-using PersonalFinanceManagement.Models.Dto;
 using PersonalFinanceManagement.Models.Messages;
 using System;
 using System.Collections.Generic;

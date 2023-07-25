@@ -23,29 +23,29 @@ namespace PersonalFinanceManagement.Database.Repository
 
         public CustomMessage CheckForInvalidDates(DateTime? startDate = null, DateTime? endDate = null)
         { 
-            var messages = new List<MessageDetails>();
+            var errors = new List<ErrorDetails>();
 
             if (startDate.HasValue && startDate.Value!=DateTime.MinValue && startDate.Value.Kind != DateTimeKind.Utc)
             {
-                messages.Add(new MessageDetails
+                errors.Add(new ErrorDetails
                 {
-                    StatusCode = 400,
-                    Message = "startDate must be a valid DateTime in UTC format."
+                    Error = "startDate must be a valid DateTime in UTC format."
                 });
             }
             if (endDate.HasValue && endDate.Value!=DateTime.MinValue && endDate.Value.Kind != DateTimeKind.Utc)
             {
-                messages.Add(new MessageDetails
+                errors.Add(new ErrorDetails
                 {
-                    StatusCode = 400,
-                    Message = "endDate must be a valid DateTime in UTC format."
+                    Error = "endDate must be a valid DateTime in UTC format."
                 });
             }
-            if (messages.Count > 0)
+            if (errors.Count > 0)
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = messages
+                    Message = "An error/s occured.",
+                    Details = "You inserted an invalid value/s.",
+                    Errors =  errors
                 };
                 return customMessage;
             }
@@ -53,7 +53,7 @@ namespace PersonalFinanceManagement.Database.Repository
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = new List<MessageDetails>()
+                    Errors = new List<ErrorDetails>()
                 };
                 return customMessage;
             }
@@ -157,7 +157,7 @@ namespace PersonalFinanceManagement.Database.Repository
             }
             else
             {
-                 transactions = await _dbContext.Transactions.ToListAsync();
+                 transactions = await _dbContext.Transactions.Where(x => x.catCode != null).ToListAsync();
             }
             
             var query = transactions.AsQueryable();

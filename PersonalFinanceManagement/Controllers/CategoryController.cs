@@ -36,18 +36,19 @@ namespace PersonalFinanceManagement.Controllers
 
             if (categories.Count == 0)
             {
-                var messages = new CustomMessage
+                var customMessage = new CustomMessage
                 {
-                    Message = new List<MessageDetails>
+                    Message="An error occured",
+                    Details="You inserted an invalid value",
+                    Errors = new List<ErrorDetails>
                 {
-                    new MessageDetails
+                    new ErrorDetails
                     {
-                        StatusCode = 400,
-                        Message = "The provided parentId doesn't exist"
+                        Error = "The value you have provided for parentId is not valid."
                     }
                 }
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
 
             return new ObjectResult(categories);
@@ -59,15 +60,19 @@ namespace PersonalFinanceManagement.Controllers
             var messages = new CustomMessage();
             if (csvFile == null || csvFile.Length == 0)
             {
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
+                    Message = "An error occured",
+                    Details = "No file has been uploaded",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
                     {
-                        StatusCode = 400,
-                        Message = "No file uploaded"
+                        Error = "The file you provided is either not valid or empty."
                     }
+                }
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
 
             //reading all of the categories from the file
@@ -75,29 +80,23 @@ namespace PersonalFinanceManagement.Controllers
 
 
             var result = await _categoryService.ImportCategories(categories);
-            if (result)
+            if (result>0)
             {
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
-                    {
-                        StatusCode = 200,
-                        Message = "All new categories have been added!"
-                    }
+                    Message = "Successful import!",
+                    Details = result+" categories have been added!",
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
             else
             {
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
-                    {
-                        StatusCode = 200,
-                        Message = "All categories have been updated!"
-                    }
+                    Message = "Successful import!",
+                    Details = "All categories have been updated!",
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
         }
     }

@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace PersonalFinanceManagement.Models.Messages
 {
-    public class MessageDetails
+    public class ErrorDetails
     {
-        public int StatusCode { get; set; }
-        public string Message { get; set; }
+        public string Error { get; set; }
     }
 }

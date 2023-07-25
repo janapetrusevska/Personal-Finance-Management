@@ -48,9 +48,9 @@ namespace PersonalFinanceManagement.Database.Repository
             return category;
         }
 
-        public async Task<Boolean> ImportCategories(List<CategoryEntity> categories)
+        public async Task<int> ImportCategories(List<CategoryEntity> categories)
         {
-            bool newCategoriesAdded = false;
+            var count = 0;
 
             foreach (var category in categories)
             {
@@ -65,11 +65,11 @@ namespace PersonalFinanceManagement.Database.Repository
                 else
                 {
                     _dbContext.Categories.Add(category);
-                    newCategoriesAdded = true;
+                    count++;
                 }
             }
             await _dbContext.SaveChangesAsync();
-            return newCategoriesAdded;
+            return count;
         }
     }
 }

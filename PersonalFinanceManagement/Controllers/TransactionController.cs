@@ -8,7 +8,6 @@ using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
 using PersonalFinanceManagement.Models.CategoryFolder;
-using PersonalFinanceManagement.Models.Dto;
 using PersonalFinanceManagement.Models.Messages;
 using PersonalFinanceManagement.Service;
 using System;
@@ -48,36 +47,36 @@ namespace PersonalFinanceManagement.Controllers
         public async Task<IActionResult> GetTransactions([FromQuery] string transactionKind, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
         {
             var invalidDatesMessage =  _transactionService.areTheDatesInvalid(startDate, endDate);
-            if (invalidDatesMessage.Message.Count > 0)
+            if (invalidDatesMessage.Errors.Count > 0)
             {
                 return new ObjectResult(invalidDatesMessage);
             }
 
-            var messages = new List<MessageDetails>();
+            var errors = new List<ErrorDetails>();
 
             if (pageSize<0)
             {
-                messages.Add(new MessageDetails
+                errors.Add(new ErrorDetails
                 {
-                    StatusCode = 400,
-                    Message = "PageSize variable has invalid value."
+                    Error = "PageSize variable has invalid value."
                 });
             }
             if (page<0)
             {
-                messages.Add(new MessageDetails
+                errors.Add(new ErrorDetails
                 {
-                    StatusCode = 400,
-                    Message = "Page variable has invalid value."
+                    Error = "Page variable has invalid value."
                 });
             }
-            if (messages.Count > 0)
+            if (errors.Count > 0)
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = messages
+                    Message = "An error/s occured.",
+                    Details = "You inserted an invalid value/s.",
+                    Errors = errors
                 };
-                return new ObjectResult(customMessage.Message);
+                return new ObjectResult(customMessage);
             }
 
             var transactions = await _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
@@ -91,15 +90,19 @@ namespace PersonalFinanceManagement.Controllers
             var messages = new CustomMessage();
             if (csvFile == null || csvFile.Length == 0)
             {
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
+                    Message = "An error occured",
+                    Details = "No file has been uploaded",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
                     {
-                        StatusCode = 400,
-                        Message = "No file uploaded"
+                        Error = "You haven't provided a csv file."
                     }
+                }
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
 
             //reading all transactions from the file
@@ -109,27 +112,21 @@ namespace PersonalFinanceManagement.Controllers
 
             if (result>0)
             {
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
-                    {
-                        StatusCode = 200,
-                        Message = result+" new transactions have been added!"
-                    }
+                    Message = "Successful import!",
+                    Details = result + " transactions have been added!",
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
             else
             {
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
-                    {
-                        StatusCode = 200,
-                        Message = "All transactions have been updated!"
-                    }
+                    Message = "Successful import!",
+                    Details = "All transactions have been updated!",
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
         }
 
@@ -138,16 +135,23 @@ namespace PersonalFinanceManagement.Controllers
         {
             var transaction = await _transactionService.GetTransactionById(id);
 
-            var messages = new List<MessageDetails>();
+            var errors = new List<ErrorDetails>();
             if (transaction.Id == null)
             {
                 //if the transaction wasn't found
-                messages.Add(new MessageDetails
+                var customMessage = new CustomMessage
                 {
-                    StatusCode = 400,
-                    Message = "The transaction with that id doesn't exist!"
-                });
-                return new ObjectResult(messages);
+                    Message = "An error occured",
+                    Details = "No transaction has been found",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
+                    {
+                        Error = "There is no transaction with the id you provided."
+                    }
+                }
+                };
+                return new ObjectResult(customMessage);
             }
             
             var categoryCodes = splits.Select(s => s.CatCode).ToList();
@@ -157,18 +161,53 @@ namespace PersonalFinanceManagement.Controllers
                 var category = await _categoryService.GetCategoryByCode(s);
                 if (category == null)
                 {
-                    messages.Add(new MessageDetails
+                    errors.Add(new ErrorDetails
                     {
-                        StatusCode = 400,
-                        Message = category.Code+" is an invalid value."
+                        Error = s+" is an invalid value."
                     });
                 }
                 existingCategories.Add(category);
             }
-
-            if (messages.Count > 0)
+            var amounts = splits.Select(s => s.Amount).ToList();
+            var sum = 0.0;
+            foreach(Double amount in amounts)
             {
-                return new ObjectResult(messages);
+                if (amount<0)
+                {
+                    errors.Add(new ErrorDetails
+                    {
+                        Error = amount + " is an invalid value."
+                    });
+                }
+                sum += amount;
+            }
+
+            if (sum != transaction.Amount)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "An error/s occured.",
+                    Details = "You inserted an invalid value/s.",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
+                    {
+                        Error = "The amounts of the splits don't add up to the amount of the transaction"
+                    }
+                }
+                };
+                return new ObjectResult(customMessage);
+            }
+
+            if (errors.Count > 0)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "An error/s occured.",
+                    Details = "You inserted an invalid value/s.",
+                    Errors = errors
+                };
+                return new ObjectResult(customMessage);
             }
 
             Transaction transactionSplitted = await _transactionService.ImportSplitsInTransaction(transaction, splits);
@@ -185,17 +224,37 @@ namespace PersonalFinanceManagement.Controllers
             if (transactionTask.Result.Id == null)
             {
                 //if the transaction wasn't found
-                messages.Message = new List<MessageDetails>
+                var customMessage = new CustomMessage
                 {
-                    new MessageDetails
+                    Message = "An error occured",
+                    Details = "No transaction has been found",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
                     {
-                        StatusCode = 200,
-                        Message = "The transaction with that id doesn't exist!"
+                        Error = "There is no transaction with the id you provided."
                     }
+                }
                 };
-                return new ObjectResult(messages);
+                return new ObjectResult(customMessage);
             }
             var catCode = transactionTask.Result.CatCode;
+            if(catCode == null)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "An error occured",
+                    Details = "The transaction's category is null.",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
+                    {
+                        Error = "The transaction with the id you provided has no category."
+                    }
+                }
+                };
+                return new ObjectResult(customMessage);
+            }
             var categoryTask = _categoryService.GetCategoryByCode(catCode);
             var category = categoryTask.Result;
 

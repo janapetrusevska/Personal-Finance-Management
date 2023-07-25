@@ -2,7 +2,6 @@
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Models;
 using PersonalFinanceManagement.Models.CategoryFolder;
-using PersonalFinanceManagement.Models.Dto;
 using System;
 
 namespace PersonalFinanceManagement.Mappings
@@ -57,19 +56,7 @@ namespace PersonalFinanceManagement.Mappings
                 .ForMember(t => t.Amount, e => e.MapFrom(src => src.amount))
                 .ForMember(t => t.CatCode, e => e.MapFrom(src => src.catCode))
                 .ForMember(t => t.TransactionId, e => e.MapFrom(x => x.transactionId));
-
-            CreateMap<TransactionEntity, TransactionDto>()
-                .ForMember(t => t.Id, e => e.MapFrom(x => x.id))
-                .ForMember(t => t.BeneficiaryName, e => e.MapFrom(x => x.name))
-                .ForMember(t => t.Amount, e => e.MapFrom(x => x.amount))
-                .ForMember(t => t.Date, e => e.MapFrom(x => x.date))
-                .ForMember(t => t.Description, e => e.MapFrom(x => x.description))
-                .ForMember(t => t.Direction, e => e.MapFrom(x => x.direction))
-                .ForMember(t => t.Kind, e => e.MapFrom(x => x.kind))
-                .ForMember(t => t.Currency, e => e.MapFrom(x => x.currency))
-                .ForMember(t => t.MccCode, e => e.MapFrom(x => x.mcc))
-                .ForMember(t => t.CatCode, e => e.MapFrom(x => x.catCode))
-                .ForMember(t => t.Splits, e => e.MapFrom(x => x.splits));
+          
         }
 
         protected internal AutoMapperProfile(string profileName, Action<IProfileExpression> configurationAction) : base(profileName, configurationAction)

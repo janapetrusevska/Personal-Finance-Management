@@ -17,6 +17,7 @@ namespace PersonalFinanceManagement.Database.Entities
         public double amount { get; set; }
         [JsonIgnore]
         public string transactionId { get; set; }
+
         [ForeignKey("transactionId")]
         [JsonIgnore]
         public TransactionEntity transactionEntity { get; set; }

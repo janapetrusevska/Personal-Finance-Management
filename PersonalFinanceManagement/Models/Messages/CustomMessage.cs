@@ -7,6 +7,8 @@ namespace PersonalFinanceManagement.Models.Messages
 {
     public class CustomMessage
     {
-        public List<MessageDetails> Message { get; set; }
+        public string Message { get; set; }
+        public string Details { get; set; }
+        public List<ErrorDetails> Errors { get; set; }
     }
 }

@@ -34,7 +34,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             return _mapper.Map<Category>(category);
         }
 
-        public async Task<Boolean> ImportCategories(List<Category> categories)
+        public async Task<int> ImportCategories(List<Category> categories)
         {
             List<CategoryEntity> categoryEntities = _mapper.Map<List<CategoryEntity>>(categories);
 
