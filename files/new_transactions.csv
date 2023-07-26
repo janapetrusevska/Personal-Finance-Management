@@ -1,0 +1,7 @@
+id,beneficiary-name,date,direction,amount,description,currency,mcc,kind
+15122088,Glovo,2021-01-01 00:00:00+01,d,44.3,Food delivery,USD,5811,pmt
+66229487,Faculty of contemporary arts,2021-01-01 00:00:00+01,d,187.2,Tuition,USD,8299,pmt
+66666666,Faculty of contemporary arts,2021-01-01 00:00:00+01,d,287.2,Tuition,USD,8299,pmt
+71233330,Glovo,2021-01-01 00:00:00+01,d,17,Food delivery,USD,5811,pmt
+28670410,Wolt,01-06-21,d,48.4,Food delivery,USD,5811,pmt
+11111111,Dental Plus,01-05-21,d,30.9,Doctor's appointment,USD,8011,pmt

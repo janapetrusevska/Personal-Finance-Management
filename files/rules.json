@@ -1,0 +1,6 @@
+{
+  "Rule1": {
+    "catCode": "39",
+    "predicate": "Description == \"Food delivery\""
+  }
+}
