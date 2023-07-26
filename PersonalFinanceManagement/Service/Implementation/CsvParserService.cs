@@ -1,15 +1,18 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
+using PersonalFinanceManagement.Models.CategoryFolder;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace PersonalFinanceManagement.Service.Implementation
@@ -79,5 +82,19 @@ namespace PersonalFinanceManagement.Service.Implementation
             }
 
         }
-    }
+
+        public List<CategoryRule> GetCategoryRules(IFormFile rulesFile)
+        {
+            using (var streamReader = new StreamReader(rulesFile.OpenReadStream()))
+            {
+                string configFileContent = streamReader.ReadToEnd();
+
+                var rulesConfig = JsonConvert.DeserializeObject<Dictionary<string, CategoryRule>>(configFileContent);
+
+                List<CategoryRule> rules = rulesConfig.Values.ToList();
+
+                return rules;
+            }
+        }
+    }   
 }

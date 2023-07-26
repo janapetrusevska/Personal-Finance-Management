@@ -21,5 +21,9 @@ namespace PersonalFinanceManagement.Service
         CustomMessage areTheDatesInvalid(DateTime startDate, DateTime endDate);
 
         Task<Transaction> ImportSplitsInTransaction(Transaction transaction, List<SingleCategorySplit> splits);
+
+        Task<List<Transaction>> GetTransactionsWithoutCategories();
+
+        Task UpdateTransactions(List<Transaction> transactionsWithoutCategory);
     }
 }

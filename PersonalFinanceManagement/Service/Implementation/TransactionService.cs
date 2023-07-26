@@ -77,6 +77,19 @@ namespace PersonalFinanceManagement.Service.Implementation
             transaction = _mapper.Map<Transaction>(transactionEntity);
             return transaction;
         }
+
+        public async Task<List<Transaction>> GetTransactionsWithoutCategories()
+        {
+            var transactionsEntities = await _transactionRepository.GetTransactionsWithoutCategories();
+            var transactions = _mapper.Map<List<Transaction>>(transactionsEntities);
+            return transactions;
+        }
+
+        public async Task UpdateTransactions(List<Transaction> transactionsWithoutCategory)
+        {
+            var transactionEntities = _mapper.Map <List<TransactionEntity>>(transactionsWithoutCategory);
+            await _transactionRepository.UpdateTransactions(transactionEntities);
+        }
     }
     
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using PersonalFinanceManagement.Database.Entities;
 using PersonalFinanceManagement.Database.Repository;
 using PersonalFinanceManagement.Models;
@@ -32,6 +33,11 @@ namespace PersonalFinanceManagement.Service.Implementation
         {
             var category = await _repository.GetCategoryByCode(code);
             return _mapper.Map<Category>(category);
+        }
+
+        public Task<List<CategoryRule>> GetCategoryRules(IFormFile rules)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<int> ImportCategories(List<Category> categories)

@@ -225,5 +225,21 @@ namespace PersonalFinanceManagement.Database.Repository
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<List<TransactionEntity>> GetTransactionsWithoutCategories()
+        {
+            var transactions = await _dbContext.Transactions.Where(t => t.catCode == null).ToListAsync();
+            return transactions;
+        }
+
+        public async Task UpdateTransactions(List<TransactionEntity> transactionEntities)
+        {
+            foreach(TransactionEntity transaction in transactionEntities)
+            {
+                var existingTransaction = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.id == transaction.id);
+                existingTransaction.catCode = transaction.catCode;
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 }

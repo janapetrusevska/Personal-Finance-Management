@@ -436,3 +436,8 @@ C:\Users\User\Desktop\Personal-Finance-Management-main\Personal-Finance-Manageme
 C:\Users\User\Desktop\Personal-Finance-Management-main\Personal-Finance-Management-main\PersonalFinanceManagement\obj\Debug\net5.0\PersonalFinanceManagement.pdb
 C:\Users\User\Desktop\Personal-Finance-Management-main\Personal-Finance-Management-main\PersonalFinanceManagement\obj\Debug\net5.0\PersonalFinanceManagement.genruntimeconfig.cache
 C:\Users\User\Desktop\AssecoPraksa\Personal-Finance-Management\PersonalFinanceManagement\bin\Debug\net5.0\Microsoft.Office.Interop.Excel.dll
+C:\Users\User\Desktop\AssecoPraksa\Personal-Finance-Management\PersonalFinanceManagement\bin\Debug\net5.0\System.Linq.Dynamic.Core.dll
+C:\Users\User\Desktop\AssecoPraksa\Personal-Finance-Management\PersonalFinanceManagement\bin\Debug\net5.0\Habanero.BO.dll
+C:\Users\User\Desktop\AssecoPraksa\Personal-Finance-Management\PersonalFinanceManagement\bin\Debug\net5.0\Habanero.Base.dll
+C:\Users\User\Desktop\AssecoPraksa\Personal-Finance-Management\PersonalFinanceManagement\bin\Debug\net5.0\Habanero.Console.dll
+C:\Users\User\Desktop\AssecoPraksa\Personal-Finance-Management\PersonalFinanceManagement\bin\Debug\net5.0\Habanero.DB.dll

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceManagement.Models;
 using PersonalFinanceManagement.Models.CategoryFolder;
 using System;
@@ -15,6 +16,7 @@ namespace PersonalFinanceManagement.Service
         Task<int> ImportCategories(List<Category> categories);
 
         Task<Category> GetCategoryByCode(string code);
+
 
     }
 }

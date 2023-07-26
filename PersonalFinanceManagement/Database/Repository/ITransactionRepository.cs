@@ -19,5 +19,7 @@ namespace PersonalFinanceManagement.Database.Repository
         Task<TransactionEntity> GetTransactionById(string id);
         Task<List<TransactionEntity>> GetTransactionsForAnalytics(string catCode = null, DateTime? startDate = null, DateTime? endDate = null, string direction = null);
         Task UpdateTransactionsSplits(TransactionEntity transactionEntity);
+        Task<List<TransactionEntity>> GetTransactionsWithoutCategories();
+        Task UpdateTransactions(List<TransactionEntity> transactionEntities);
     }
 }

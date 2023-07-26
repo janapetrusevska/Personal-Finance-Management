@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Habanero.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PersonalFinanceManagement.Database;
 using PersonalFinanceManagement.Mappings;
 using PersonalFinanceManagement.Models;
@@ -15,6 +17,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -163,7 +167,7 @@ namespace PersonalFinanceManagement.Controllers
                 {
                     errors.Add(new ErrorDetails
                     {
-                        Error = s+" is an invalid value."
+                        Error = s+" is an invalid value for category code."
                     });
                 }
                 existingCategories.Add(category);
@@ -176,7 +180,7 @@ namespace PersonalFinanceManagement.Controllers
                 {
                     errors.Add(new ErrorDetails
                     {
-                        Error = amount + " is an invalid value."
+                        Error = amount + " is an invalid value for amount."
                     });
                 }
                 sum += amount;
@@ -262,9 +266,56 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpPost("auto-categorize")]
-        public IActionResult AutoCategorizeTransactions()
+        public IActionResult AutoCategorizeTransactions(IFormFile rulesFile)
         {
-            return Ok();
+            if (rulesFile == null || rulesFile.Length <= 0)
+            {
+                    var customMessage = new CustomMessage
+                    {
+                        Message = "An error occured",
+                        Details = "No file has been uploaded",
+                        Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
+                    {
+                        Error = "You haven't provided a json file."
+                    }
+                }
+                    };
+                    return new ObjectResult(customMessage);
+            }
+            var rulesList = _csvParserService.GetCategoryRules(rulesFile);
+
+            var transactionsWithoutCategory = _transactionService.GetTransactionsWithoutCategories().Result;
+
+            foreach (var transaction in transactionsWithoutCategory)
+            {
+                if (!string.IsNullOrEmpty(transaction.CatCode))
+                {
+                    continue;
+                }
+                foreach (var rule in rulesList)
+                {
+                    var predicate = BuildPredicate(rule.Predicate);
+                    if (predicate(transaction))
+                    {
+                        transaction.CatCode = rule.CatCode;
+                        break;
+                    }
+                }
+            }
+
+            _transactionService.UpdateTransactions(transactionsWithoutCategory);
+
+            return Ok("Updated!");
+        }
+
+        private Func<Transaction, bool> BuildPredicate(string predicateExpression)
+        {
+            // Parse the predicate expression and build a lambda expression
+            var parameter = Expression.Parameter(typeof(Transaction), "transaction");
+            var lambda = DynamicExpressionParser.ParseLambda(new[] { parameter }, typeof(bool), predicateExpression);
+            return (Func<Transaction, bool>)lambda.Compile();
         }
     }
 }
