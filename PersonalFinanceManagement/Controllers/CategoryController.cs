@@ -48,7 +48,7 @@ namespace PersonalFinanceManagement.Controllers
                     }
                 }
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
 
             return new ObjectResult(categories);

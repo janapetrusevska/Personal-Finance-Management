@@ -50,12 +50,11 @@ namespace PersonalFinanceManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTransactions([FromQuery] string transactionKind, [FromQuery] string startDate, [FromQuery] string endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
         {
-            /*var invalidDatesMessage =  _transactionService.areTheDatesInvalid(startDate, endDate);
+            var invalidDatesMessage =  _transactionService.areTheDatesInvalid(startDate, endDate);
             if (invalidDatesMessage.Errors.Count > 0)
             {
                 return new ObjectResult(invalidDatesMessage);
             }
-            */
 
             var errors = new List<ErrorDetails>();
 
@@ -160,7 +159,7 @@ namespace PersonalFinanceManagement.Controllers
                     }
                 }
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
             
             var categoryCodes = splits.Select(s => s.CatCode).ToList();
@@ -199,7 +198,7 @@ namespace PersonalFinanceManagement.Controllers
                     Details = "You inserted an invalid value/s.",
                     Errors = errors
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
 
             if (sum != transaction.Amount)
@@ -216,7 +215,7 @@ namespace PersonalFinanceManagement.Controllers
                     }
                 }
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
 
 
@@ -229,7 +228,6 @@ namespace PersonalFinanceManagement.Controllers
         [HttpPost("{id}/categorize")]
         public IActionResult CategorizeTransactions(string id)
         {
-            var messages = new CustomMessage();
             var transactionTask = _transactionService.GetTransactionById(id);
             if (transactionTask.Result.Id == null)
             {
@@ -249,22 +247,6 @@ namespace PersonalFinanceManagement.Controllers
                 return new BadRequestObjectResult(customMessage);
             }
             var catCode = transactionTask.Result.CatCode;
-            if(catCode == null)
-            {
-                var customMessage = new CustomMessage
-                {
-                    Message = "An error occurred",
-                    Details = "The transaction's category is null.",
-                    Errors = new List<ErrorDetails>
-                {
-                    new ErrorDetails
-                    {
-                        Error = "The transaction with the id you provided has no category."
-                    }
-                }
-                };
-                return new BadRequestObjectResult(customMessage);
-            }
             var categoryTask = _categoryService.GetCategoryByCode(catCode);
             var category = categoryTask.Result;
             if (category == null)
@@ -272,12 +254,12 @@ namespace PersonalFinanceManagement.Controllers
                 var customMessage = new CustomMessage
                 {
                     Message = "An error occurred",
-                    Details = "The transaction's category doesn't exist in the database.",
+                    Details = "The transaction has no category",
                     Errors = new List<ErrorDetails>
                 {
                     new ErrorDetails
                     {
-                        Error = "The transaction's category is valid but it doesn't exist. Check if the database has any category."
+                        Error = "The transaction's category is null."
                     }
                 }
                 };
