@@ -48,13 +48,14 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTransactions([FromQuery] string transactionKind, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
+        public async Task<IActionResult> GetTransactions([FromQuery] string transactionKind, [FromQuery] string startDate, [FromQuery] string endDate, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] SortOrder sortOrder = SortOrder.asc, [FromQuery] string? sortBy = null)
         {
-            var invalidDatesMessage =  _transactionService.areTheDatesInvalid(startDate, endDate);
+            /*var invalidDatesMessage =  _transactionService.areTheDatesInvalid(startDate, endDate);
             if (invalidDatesMessage.Errors.Count > 0)
             {
                 return new ObjectResult(invalidDatesMessage);
             }
+            */
 
             var errors = new List<ErrorDetails>();
 
@@ -76,62 +77,66 @@ namespace PersonalFinanceManagement.Controllers
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error/s occured.",
+                    Message = "An error/s occurred.",
                     Details = "You inserted an invalid value/s.",
                     Errors = errors
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
 
-            var transactions = await _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
+            PagedSortedList<Transaction> transactions = await _transactionService.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
 
+            if (transactions.TotalCount == 0)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "An error occurred",
+                    Details = "No transaction has been found",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
+                    {
+                        Error = "There are no transactions in the database that satisfy the conditions."
+                    }
+                }
+                };
+                return new BadRequestObjectResult(customMessage);
+            }
             return Ok(transactions);
         }
 
         [HttpPost("import")]
         public async Task<IActionResult> ImportTransactionsAsync(IFormFile csvFile)
         {
-            var messages = new CustomMessage();
             if (csvFile == null || csvFile.Length == 0)
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error occured",
-                    Details = "No file has been uploaded",
-                    Errors = new List<ErrorDetails>
-                {
-                    new ErrorDetails
-                    {
-                        Error = "You haven't provided a csv file."
-                    }
-                }
+                    Message = "No file has been uploaded.",
+                    Details = "You haven't provided a csv file."
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
+            }
+            if (!csvFile.ContentType.Equals("text/csv", StringComparison.OrdinalIgnoreCase))
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "No CSV file was uploaded.",
+                    Details = "Only CSV files are allowed for import."
+                };
+                return new BadRequestObjectResult(customMessage);
             }
 
             //reading all transactions from the file
             var transactions = _csvParserService.ReadingTransactionsFromFile(csvFile);
 
             var result = await _transactionService.ImportTransactions(transactions);
-
-            if (result>0)
+            var Message = new CustomMessage
             {
-                var customMessage = new CustomMessage
-                {
-                    Message = "Successful import!",
-                    Details = result + " transactions have been added!",
-                };
-                return new ObjectResult(customMessage);
-            }
-            else
-            {
-                var customMessage = new CustomMessage
-                {
-                    Message = "Successful import!",
-                    Details = "All transactions have been updated!",
-                };
-                return new ObjectResult(customMessage);
-            }
+                Message = "Successful import!",
+                Details = "Number of transactions added: " + result[0] + "; Number of transactions updated: " + result[1]
+            };
+            return new ObjectResult(Message);
         }
 
         [HttpPost("{id}/split")]
@@ -145,7 +150,7 @@ namespace PersonalFinanceManagement.Controllers
                 //if the transaction wasn't found
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error occured",
+                    Message = "An error occurred",
                     Details = "No transaction has been found",
                     Errors = new List<ErrorDetails>
                 {
@@ -186,11 +191,22 @@ namespace PersonalFinanceManagement.Controllers
                 sum += amount;
             }
 
+            if (errors.Count > 0)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "An error/s occurred.",
+                    Details = "You inserted an invalid value/s.",
+                    Errors = errors
+                };
+                return new ObjectResult(customMessage);
+            }
+
             if (sum != transaction.Amount)
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error/s occured.",
+                    Message = "An error/s occurred.",
                     Details = "You inserted an invalid value/s.",
                     Errors = new List<ErrorDetails>
                 {
@@ -203,16 +219,6 @@ namespace PersonalFinanceManagement.Controllers
                 return new ObjectResult(customMessage);
             }
 
-            if (errors.Count > 0)
-            {
-                var customMessage = new CustomMessage
-                {
-                    Message = "An error/s occured.",
-                    Details = "You inserted an invalid value/s.",
-                    Errors = errors
-                };
-                return new ObjectResult(customMessage);
-            }
 
             Transaction transactionSplitted = await _transactionService.ImportSplitsInTransaction(transaction, splits);
 
@@ -230,7 +236,7 @@ namespace PersonalFinanceManagement.Controllers
                 //if the transaction wasn't found
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error occured",
+                    Message = "An error occurred",
                     Details = "No transaction has been found",
                     Errors = new List<ErrorDetails>
                 {
@@ -240,14 +246,14 @@ namespace PersonalFinanceManagement.Controllers
                     }
                 }
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
             var catCode = transactionTask.Result.CatCode;
             if(catCode == null)
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error occured",
+                    Message = "An error occurred",
                     Details = "The transaction's category is null.",
                     Errors = new List<ErrorDetails>
                 {
@@ -257,33 +263,52 @@ namespace PersonalFinanceManagement.Controllers
                     }
                 }
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
             var categoryTask = _categoryService.GetCategoryByCode(catCode);
             var category = categoryTask.Result;
+            if (category == null)
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "An error occurred",
+                    Details = "The transaction's category doesn't exist in the database.",
+                    Errors = new List<ErrorDetails>
+                {
+                    new ErrorDetails
+                    {
+                        Error = "The transaction's category is valid but it doesn't exist. Check if the database has any category."
+                    }
+                }
+                };
+                return new BadRequestObjectResult(customMessage);
+            }
 
             return Ok(category);
         }
 
         [HttpPost("auto-categorize")]
-        public IActionResult AutoCategorizeTransactions(IFormFile rulesFile)
+        public async Task<IActionResult> AutoCategorizeTransactions(IFormFile rulesFile)
         {
-            if (rulesFile == null || rulesFile.Length <= 0)
+            if (rulesFile == null || rulesFile.Length == 0)
             {
-                    var customMessage = new CustomMessage
-                    {
-                        Message = "An error occured",
-                        Details = "No file has been uploaded",
-                        Errors = new List<ErrorDetails>
+                var customMessage = new CustomMessage
                 {
-                    new ErrorDetails
-                    {
-                        Error = "You haven't provided a json file."
-                    }
-                }
-                    };
-                    return new ObjectResult(customMessage);
+                    Message = "No file has been uploaded.",
+                    Details = "You haven't provided a json file."
+                };
+                return new BadRequestObjectResult(customMessage);
             }
+            if (!rulesFile.ContentType.Equals("application/json", StringComparison.OrdinalIgnoreCase))
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "No json file was uploaded.",
+                    Details = "Only json files are allowed for import."
+                };
+                return new BadRequestObjectResult(customMessage);
+            }
+
             var rulesList = _csvParserService.GetCategoryRules(rulesFile);
 
             var transactionsWithoutCategory = _transactionService.GetTransactionsWithoutCategories().Result;
@@ -305,9 +330,15 @@ namespace PersonalFinanceManagement.Controllers
                 }
             }
 
-            _transactionService.UpdateTransactions(transactionsWithoutCategory);
+            var transactionsWithCategories = transactionsWithoutCategory.Where(x => x.CatCode != null).ToList();
 
-            return Ok("Updated!");
+            await _transactionService.UpdateTransactions(transactionsWithCategories);
+
+            var message = new CustomMessage
+            {
+                Message = "Successful auto-categorization!"
+            };
+            return new ObjectResult(message);
         }
 
         private Func<Transaction, bool> BuildPredicate(string predicateExpression)

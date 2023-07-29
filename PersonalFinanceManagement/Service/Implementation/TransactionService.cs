@@ -26,7 +26,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             _mapper = mapper;
         }
 
-        public CustomMessage areTheDatesInvalid(DateTime startDate, DateTime endDate)
+        public CustomMessage areTheDatesInvalid(string startDate, string endDate)
         {
             var result =  _transactionRepository.CheckForInvalidDates(startDate, endDate);
             return result;
@@ -40,13 +40,13 @@ namespace PersonalFinanceManagement.Service.Implementation
             return transaction;
         }
 
-        public async Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, DateTime startDate, DateTime endDate, int page, int pageSize, SortOrder sortOrder, string sortBy)
+        public async Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, string? startDate, string? endDate, int page, int pageSize, SortOrder sortOrder, string sortBy)
         {
             var pagedSortedList = await _transactionRepository.GetTransactions(transactionKind, startDate, endDate, page, pageSize, sortOrder, sortBy);
             return _mapper.Map<PagedSortedList<Transaction>>(pagedSortedList);
         }
 
-        public async Task<int> ImportTransactions(List<Transaction> transactions)
+        public async Task<List<int>> ImportTransactions(List<Transaction> transactions)
         {
             List<TransactionEntity> transactionEntities = _mapper.Map<List<TransactionEntity>>(transactions);
 

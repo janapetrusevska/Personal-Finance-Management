@@ -48,9 +48,11 @@ namespace PersonalFinanceManagement.Database.Repository
             return category;
         }
 
-        public async Task<int> ImportCategories(List<CategoryEntity> categories)
+        public async Task<List<int>> ImportCategories(List<CategoryEntity> categories)
         {
-            var count = 0;
+            List<int> count = new List<int>();
+            var updated = 0;
+            var added = 0;
 
             foreach (var category in categories)
             {
@@ -58,17 +60,23 @@ namespace PersonalFinanceManagement.Database.Repository
 
                 if (existingCategory != null)
                 {
-                    existingCategory.name = category.name;
-                    existingCategory.code = category.code;
-                    existingCategory.parentCode = category.parentCode;
+                    if(existingCategory.name != category.name)
+                        existingCategory.name = category.name;
+                    if (existingCategory.code != category.code)
+                        existingCategory.code = category.code;
+                    if (existingCategory.parentCode != category.parentCode)
+                        existingCategory.parentCode = category.parentCode;
+                    updated++;
                 }
                 else
                 {
                     _dbContext.Categories.Add(category);
-                    count++;
+                    added++;
                 }
             }
             await _dbContext.SaveChangesAsync();
+            count.Add(added);
+            count.Add(updated);
             return count;
         }
     }

@@ -31,7 +31,7 @@ namespace PersonalFinanceManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSpendingAnalytics([FromQuery] string catCode, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] string direction)
+        public async Task<IActionResult> GetSpendingAnalytics([FromQuery] string catCode, [FromQuery] string startDate, [FromQuery] string endDate, [FromQuery] string direction)
         {
             var invalidDatesMessage = _transactionService.areTheDatesInvalid(startDate, endDate);
             if (invalidDatesMessage.Errors.Count > 0)

@@ -12,13 +12,13 @@ namespace PersonalFinanceManagement.Service
 {
     public interface ITransactionService
     {
-        Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, DateTime startDate, DateTime endDate, int page, int pageSize, SortOrder sortOrder, string? sortBy);
+        Task<PagedSortedList<Transaction>> GetTransactions(string transactionKind, string? startDate, string? endDate, int page, int pageSize, SortOrder sortOrder, string? sortBy);
 
-        Task<int> ImportTransactions(List<Transaction> transactions);
+        Task<List<int>> ImportTransactions(List<Transaction> transactions);
 
         Task<Transaction> GetTransactionById(string id);
 
-        CustomMessage areTheDatesInvalid(DateTime startDate, DateTime endDate);
+        CustomMessage areTheDatesInvalid(string startDate, string endDate);
 
         Task<Transaction> ImportSplitsInTransaction(Transaction transaction, List<SingleCategorySplit> splits);
 

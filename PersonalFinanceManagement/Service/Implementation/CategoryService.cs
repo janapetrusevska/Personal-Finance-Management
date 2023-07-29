@@ -40,7 +40,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             throw new NotImplementedException();
         }
 
-        public async Task<int> ImportCategories(List<Category> categories)
+        public async Task<List<int>> ImportCategories(List<Category> categories)
         {
             List<CategoryEntity> categoryEntities = _mapper.Map<List<CategoryEntity>>(categories);
 

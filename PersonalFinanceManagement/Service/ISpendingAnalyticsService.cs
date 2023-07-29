@@ -8,6 +8,6 @@ namespace PersonalFinanceManagement.Service
 {
     public interface ISpendingAnalyticsService
     {
-        Task<List<SpendingInCategory>> GetAnalytics(string catCode, DateTime startDate, DateTime endDate, string direction);
+        Task<List<SpendingInCategory>> GetAnalytics(string catCode, string startDate, string endDate, string direction);
     }
 }

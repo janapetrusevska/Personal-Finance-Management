@@ -12,12 +12,12 @@ namespace PersonalFinanceManagement.Database.Repository
 {
     public interface ITransactionRepository
     {
-        CustomMessage CheckForInvalidDates(DateTime? startDate = null, DateTime? endDate = null);
-        Task<int> ImportTransactions(List<TransactionEntity> transactions);
+        CustomMessage CheckForInvalidDates(string? startDate = null, string? endDate = null);
+        Task<List<int>> ImportTransactions(List<TransactionEntity> transactions);
         Task<TransactionEntity> AddTransaction(TransactionEntity transactionEntity);
-        Task<PagedSortedList<TransactionEntity>> GetTransactions(string transactionKind = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 10, SortOrder sortOrder = SortOrder.asc, string? sortBy = null);
+        Task<PagedSortedList<TransactionEntity>> GetTransactions(string transactionKind = null, string? startDate = null, string? endDate = null, int page = 1, int pageSize = 10, SortOrder sortOrder = SortOrder.asc, string? sortBy = null);
         Task<TransactionEntity> GetTransactionById(string id);
-        Task<List<TransactionEntity>> GetTransactionsForAnalytics(string catCode = null, DateTime? startDate = null, DateTime? endDate = null, string direction = null);
+        Task<List<TransactionEntity>> GetTransactionsForAnalytics(string catCode = null, string? startDate = null, string? endDate = null, string direction = null);
         Task UpdateTransactionsSplits(TransactionEntity transactionEntity);
         Task<List<TransactionEntity>> GetTransactionsWithoutCategories();
         Task UpdateTransactions(List<TransactionEntity> transactionEntities);

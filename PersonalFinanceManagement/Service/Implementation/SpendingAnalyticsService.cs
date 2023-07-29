@@ -21,7 +21,7 @@ namespace PersonalFinanceManagement.Service.Implementation
             _mapper = mapper;
         }
 
-        public async Task<List<SpendingInCategory>> GetAnalytics(string catCode, DateTime startDate, DateTime endDate, string direction)
+        public async Task<List<SpendingInCategory>> GetAnalytics(string catCode, string startDate, string endDate, string direction)
         {
             var transactions = await _transactionRepository.GetTransactionsForAnalytics(catCode,startDate,endDate,direction);
 

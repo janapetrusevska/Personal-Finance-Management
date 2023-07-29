@@ -99,7 +99,7 @@ namespace PersonalFinanceManagement
             var username = Environment.GetEnvironmentVariable("DATABASE_USERNAME") ?? "postgres";
             var password = Environment.GetEnvironmentVariable("DATABASE_PASSWORD") ?? "JanaPetrovec54";
             var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME") ?? "pfm";
-            var host = Environment.GetEnvironmentVariable("DATABASE_HOST") ?? "localhost";
+            var host = Environment.GetEnvironmentVariable("DATABASE_HOST") ?? "127.0.0.1";
             var port = Environment.GetEnvironmentVariable("DATABASE_PORT") ?? "5432";
 
             var connectionBuilder = new NpgsqlConnectionStringBuilder

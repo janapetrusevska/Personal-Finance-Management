@@ -29,7 +29,7 @@
         "DATABASE_PASSWORD": "JanaPetrovec54",
         "DATABASE_NAME": "pfm",
         "DATABASE_PORT": "5432",
-        "DATABASE_HOST": "localhost"
+        "DATABASE_HOST": "127.0.0.1"
       }
     }
   }

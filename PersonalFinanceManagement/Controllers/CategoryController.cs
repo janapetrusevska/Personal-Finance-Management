@@ -38,7 +38,7 @@ namespace PersonalFinanceManagement.Controllers
             {
                 var customMessage = new CustomMessage
                 {
-                    Message="An error occured",
+                    Message="An error occurred",
                     Details="You inserted an invalid value",
                     Errors = new List<ErrorDetails>
                 {
@@ -57,47 +57,37 @@ namespace PersonalFinanceManagement.Controllers
         [HttpPost("import")]
         public async Task<IActionResult> ImportCategoriesAsync(IFormFile csvFile)
         {
-            var messages = new CustomMessage();
             if (csvFile == null || csvFile.Length == 0)
             {
                 var customMessage = new CustomMessage
                 {
-                    Message = "An error occured",
-                    Details = "No file has been uploaded",
-                    Errors = new List<ErrorDetails>
-                {
-                    new ErrorDetails
-                    {
-                        Error = "The file you provided is either not valid or empty."
-                    }
-                }
+                    Message = "No file has been uploaded.",
+                    Details = "You haven't provided a csv file."
                 };
-                return new ObjectResult(customMessage);
+                return new BadRequestObjectResult(customMessage);
             }
+            if (!csvFile.ContentType.Equals("text/csv", StringComparison.OrdinalIgnoreCase))
+            {
+                var customMessage = new CustomMessage
+                {
+                    Message = "No CSV file was uploaded.",
+                    Details = "Only CSV files are allowed for import."
+                };
+                return new BadRequestObjectResult(customMessage);
+            }
+            
 
             //reading all of the categories from the file
             var categories = _csvParserService.ReadingCategoriesFromFile(csvFile);
 
 
             var result = await _categoryService.ImportCategories(categories);
-            if (result>0)
+            var Message = new CustomMessage
             {
-                var customMessage = new CustomMessage
-                {
-                    Message = "Successful import!",
-                    Details = result+" categories have been added!",
-                };
-                return new ObjectResult(customMessage);
-            }
-            else
-            {
-                var customMessage = new CustomMessage
-                {
-                    Message = "Successful import!",
-                    Details = "All categories have been updated!",
-                };
-                return new ObjectResult(customMessage);
-            }
+                Message = "Successful import!",
+                Details = "Number of categories added: " + result[0] + "; Number of categories updated: " + result[1]
+            };
+            return new ObjectResult(Message);
         }
     }
 }

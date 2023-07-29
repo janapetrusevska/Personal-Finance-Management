@@ -13,7 +13,7 @@ namespace PersonalFinanceManagement.Service
     {
         Task<List<Category>> GetCategories(string parentId);
 
-        Task<int> ImportCategories(List<Category> categories);
+        Task<List<int>> ImportCategories(List<Category> categories);
 
         Task<Category> GetCategoryByCode(string code);
 
